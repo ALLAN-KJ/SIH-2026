@@ -1,0 +1,15 @@
+version: "3"
+services:
+  strongswan:
+    image: vimagick/strongswan:latest
+    container_name: ipsec-sentinel-test-target
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    ports:
+      - "500:500/udp"
+      - "4500:4500/udp"
+    volumes:
+      - ./strong-profile/ipsec.conf:/etc/ipsec.d/ipsec.conf:ro
+      - ./strong-profile/ipsec.secrets:/etc/ipsec.secrets:ro
+    restart: unless-stopped

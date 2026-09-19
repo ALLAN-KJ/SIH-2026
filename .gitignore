@@ -1,0 +1,29 @@
+.env
+venv/
+__pycache__/
+*.pyc
+*.pcap
+frontend/node_modules/
+frontend/dist/
+.pytest_cache/
+.vscode/
+
+# Runtime data — never commit live DB or probe log
+backend/data/audit.db
+backend/data/active_probe_audit.log
+
+# ML model binaries — large, regeneratable via eda_and_training.py
+# Comment these out if you want to include pre-trained models in the repo
+# backend/models/*.joblib
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+
+# IDE internals
+.agents/
+skills-lock.json
+
+# Reference repos (use submodules if needed)
+reference/

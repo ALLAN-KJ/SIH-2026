@@ -1,0 +1,209 @@
+import os
+import json
+import time
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from typing import List, Dict
+
+try:
+    from groq import Groq
+except ImportError:
+    Groq = None
+
+router = APIRouter()
+
+class RemediationRequest(BaseModel):
+    risk_label: str
+    flagged_issues: List[str]
+    top_contributing_factors: Dict[str, float]
+
+class RemediationResponse(BaseModel):
+    explanation: str
+    nist_citation: str
+    config_diff: str
+
+import re
+
+def validate_config(config: str) -> bool:
+    if not config or not isinstance(config, str):
+        return False
+        
+    config_lower = config.lower()
+    
+    # Must contain at least one of these primary keywords
+    valid_keywords = ["crypto", "isakmp", "ipsec", "transform-set", "ikev2", "proposal", "policy"]
+    if not any(k in config_lower for k in valid_keywords):
+        return False
+        
+    # Strict allowlist of permitted line prefixes in the configuration output
+    allowed_prefixes = [
+        "crypto", "encryption", "hash", "group", "authentication", 
+        "lifetime", "proposal", "policy", "set", "match", "exit", 
+        "end", "integrity", "prf", "mode", "peer", "version", "address"
+    ]
+    
+    lines = config.strip().split('\n')
+    for line in lines:
+        line_clean = line.strip().lower()
+        if not line_clean or line_clean.startswith('!'):
+            continue
+            
+        is_allowed = False
+        for prefix in allowed_prefixes:
+            if line_clean.startswith(prefix):
+                is_allowed = True
+                break
+                
+        if not is_allowed:
+            # Line doesn't match allowlist, reject
+            return False
+        
+    # Explicit denylist of dangerous/destructive commands
+    denylist_patterns = [
+        r'\berase\b',
+        r'\breload\b',
+        r'\bformat\b',
+        r'\bwrite erase\b',
+        r'\bno crypto\b',
+        r'\bshutdown\b',
+        r'\bdelete\b'
+    ]
+    
+    for pattern in denylist_patterns:
+        if re.search(pattern, config_lower):
+            return False
+            
+    return True
+
+def build_prompt(request: RemediationRequest) -> str:
+    """Constructs the exact prompt to be sent to the LLM."""
+    prompt = f"""
+You are a Senior Network Security Engineer. Provide a concise, direct analysis of the following IPsec negotiation. Do not use conversational filler, pleasantries, or hedging. Be direct and authoritative.
+
+Risk Level: {request.risk_label}
+
+Top Contributing Factors (SHAP Values):
+{request.top_contributing_factors}
+
+Flagged Issues:
+{', '.join(request.flagged_issues)}
+
+Requirements:
+1. Provide a brief, authoritative explanation of the vulnerabilities found based on the SHAP values and flagged issues.
+2. Provide a direct citation to the relevant NIST SP 800-77 Rev. 1 guidelines.
+3. Provide the FINAL remediated Cisco IOS configuration snippet that fixes these specific issues. DO NOT use diff formatting, DO NOT use '+' or '-' prefixes on lines. Provide only plain, valid Cisco IOS IPsec configuration commands.
+CRITICAL: You MUST STOP generating configuration after the 'crypto map' section. Do NOT generate any 'interface' assignments, 'ip address', or access-lists. If you generate an 'interface' block, the system will crash.
+
+Only output valid IPsec sections such as:
+crypto isakmp policy <number>
+...
+crypto ipsec transform-set <name> ...
+...
+crypto map <name> <number> ipsec-isakmp
+...
+
+Return ONLY a valid JSON object matching this schema exactly (no markdown formatting around it, just the JSON):
+{{
+  "explanation": "...",
+  "nist_citation": "...",
+  "config_diff": "..."
+}}
+"""
+    return prompt
+
+import time
+from fastapi import Request
+
+RATE_LIMIT_DB = {}
+
+def check_rate_limit(request: Request, limit: int = 5, window: int = 60):
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    
+    if client_ip not in RATE_LIMIT_DB:
+        RATE_LIMIT_DB[client_ip] = []
+        
+    RATE_LIMIT_DB[client_ip] = [t for t in RATE_LIMIT_DB[client_ip] if now - t < window]
+    
+    if len(RATE_LIMIT_DB[client_ip]) >= limit:
+        raise HTTPException(status_code=429, detail="Too many requests. Please try again later.")
+        
+    RATE_LIMIT_DB[client_ip].append(now)
+
+from starlette.concurrency import run_in_threadpool
+
+@router.post("/remediate", response_model=RemediationResponse)
+async def remediate_ipsec(request_data: RemediationRequest, request: Request):
+    check_rate_limit(request, limit=5, window=60)
+    prompt = build_prompt(request_data)
+    
+    api_key = os.environ.get("GROQ_API_KEY")
+    
+    fallback_response = RemediationResponse(
+        explanation="Remediation unavailable: API call failed, timed out, or key is missing.",
+        nist_citation="N/A",
+        config_diff="! No configuration available"
+    )
+
+    if not api_key or not Groq:
+        return fallback_response
+
+    client = Groq(api_key=api_key)
+    
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            chat_completion = await run_in_threadpool(
+                client.chat.completions.create,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an expert cybersecurity engineer. Return ONLY raw valid JSON.",
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model="qwen/qwen3.8-27b",
+                temperature=0,
+                max_tokens=1024,
+            )
+            
+            response_text = chat_completion.choices[0].message.content.strip()
+            
+            # Sometimes the model adds markdown code blocks despite instructions
+            if response_text.startswith("```json"):
+                response_text = response_text[7:]
+            if response_text.startswith("```"):
+                response_text = response_text[3:]
+            if response_text.endswith("```"):
+                response_text = response_text[:-3]
+                
+            parsed = json.loads(response_text)
+            config_diff = parsed.get("config_diff", "")
+            
+            if not validate_config(config_diff):
+                print(f"Config validation failed on attempt {attempt + 1}. Diff was:\n{config_diff}")
+                if attempt == max_retries - 1:
+                    return fallback_response
+                continue
+
+            return RemediationResponse(
+                explanation=parsed.get("explanation", ""),
+                nist_citation=parsed.get("nist_citation", ""),
+                config_diff=config_diff
+            )
+        except json.JSONDecodeError as e:
+            safe_text = response_text.encode('ascii', 'ignore').decode('ascii')
+            print(f"JSON Parsing Error on attempt {attempt + 1}: {e}\nResponse: {safe_text}")
+            if attempt == max_retries - 1:
+                return fallback_response
+        except Exception as e:
+            print(f"Groq API Error on attempt {attempt + 1}: {e}")
+            if attempt == max_retries - 1:
+                return fallback_response
+            time.sleep(2 ** attempt) # Exponential backoff
+            
+    return fallback_response
+

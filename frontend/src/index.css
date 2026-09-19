@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/*
+ * ═══════════════════════════════════════════════════════════════
+ *  IPsec Sentinel — Design Token System
+ *
+ *  See DESIGN.md for rationale behind every value.
+ *
+ *  Typography:  Satoshi (heading), Geist Sans (body), Geist Mono (data)
+ *  Palette:     True-neutral dark (not blue-tinted). Color = meaning only.
+ *  Spacing:     4px base unit. Scale: 4/8/12/16/24/32/48/64.
+ *  Radii:       6px (small), 8px (card), 12px (upload zone).
+ *  Motion:      Power2/3 ease-out. 0.3-0.5s. Stagger 0.1s. No bounce.
+ * ═══════════════════════════════════════════════════════════════
+ */
+
+@theme {
+  /* ── Fonts ── */
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, 'Consolas', monospace;
+  --font-heading: 'Satoshi', 'Geist', system-ui, sans-serif;
+
+  /* ── Type Scale (modular, 1.25 ratio from 14px base) ── */
+  --text-xs: 11px;
+  --text-xs--line-height: 16px;
+  --text-sm: 13px;
+  --text-sm--line-height: 20px;
+  --text-base: 14px;
+  --text-base--line-height: 22px;
+  --text-lg: 16px;
+  --text-lg--line-height: 24px;
+  --text-xl: 20px;
+  --text-xl--line-height: 28px;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 32px;
+  --text-3xl: 32px;
+  --text-3xl--line-height: 40px;
+  --text-4xl: 40px;
+  --text-4xl--line-height: 48px;
+  --text-5xl: 48px;
+  --text-5xl--line-height: 52px;
+
+  /* ── Spacing (4px base, deliberate gaps only) ── */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  /* ── Radii (Brutalist: sharp corners, minimal rounding) ── */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+
+  /* ── Shadows (minimal, depth through surface color not shadow) ── */
+  --shadow-sm: none;
+  --shadow-md: none;
+
+  /* ── Base Palette: True-neutral dark ──
+     Pitch black ground, stark borders. Brutal structure. */
+  --color-ground:  #09090B;
+  --color-surface: #09090B;
+  --color-raised:  #18181B;
+  --color-well:    #000000;
+  --color-border:  #27272A;
+  --color-border-dim: #18181B;
+  --color-text-1:  #FAFAFA;
+  --color-text-2:  #A1A1AA;
+  --color-text-3:  #52525B;
+
+  /* ── Accent: Teal — operational, clinical, not decorative ── */
+  --color-accent:  #2DD4BF;
+  --color-accent-dim: rgba(45,212,191,0.12);
+
+  /* ── Severity: WCAG AA verified against #141416 ── */
+  --color-crit:        #F87171;
+  --color-crit-muted:  rgba(248,113,113,0.08);
+  --color-crit-border: rgba(248,113,113,0.18);
+
+  --color-weak:        #FBBF24;
+  --color-weak-muted:  rgba(251,191,36,0.08);
+  --color-weak-border: rgba(251,191,36,0.18);
+
+  --color-mod:         #60A5FA;
+  --color-mod-muted:   rgba(96,165,250,0.08);
+  --color-mod-border:  rgba(96,165,250,0.18);
+
+  --color-strong:        #34D399;
+  --color-strong-muted:  rgba(52,211,153,0.08);
+  --color-strong-border: rgba(52,211,153,0.18);
+}
+
+/* ── Base Layer ── */
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    background-color: var(--color-ground);
+    color: var(--color-text-1);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* Asymmetric Results Grid */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .panel-risk {
+    grid-column: span 12;
+  }
+
+  .panel-secondary {
+    grid-column: span 4;
+  }
+
+  @media (min-width: 1024px) {
+    .panel-risk {
+      grid-column: span 8;
+      grid-row: span 2;
+    }
+    .panel-secondary {
+      grid-column: span 4;
+      grid-row: span 1;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .results-grid {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--color-text-1);
+    line-height: 1.2;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  code, pre, .font-mono, kbd, samp {
+    font-family: var(--font-mono);
+    font-feature-settings: 'liga' 0;
+  }
+
+  ::selection {
+    background-color: rgba(45,212,191,0.25);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* Scrollbar styling for dark theme */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-text-3); }
+}
+
+/* ── Utility Classes ── */
+
+@layer utilities {
+  .transition-default {
+    transition-property: color, background-color, border-color, opacity, box-shadow, transform;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+
+  /* Panel reveal state (GSAP will animate from this) */
+  .panel-hidden {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* ── Reduced Motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .panel-hidden {
+    opacity: 1;
+    transform: none;
+  }
+}
