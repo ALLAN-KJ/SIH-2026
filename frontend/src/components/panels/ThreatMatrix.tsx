@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 export const ThreatMatrix = ({ riskLabel }: { riskLabel: string }) => {
   const getCellColor = (likelihood: string, impact: string) => {
@@ -13,12 +13,6 @@ export const ThreatMatrix = ({ riskLabel }: { riskLabel: string }) => {
   const getOpacity = (likelihood: string, impact: string) => {
     return getCellColor(likelihood, impact) !== 'var(--color-well)' ? 1 : 0.4;
   };
-
-  const cells = [
-    { l: 'High', i: 'Low' }, { l: 'High', i: 'Medium' }, { l: 'High', i: 'High' },
-    { l: 'Medium', i: 'Low' }, { l: 'Medium', i: 'Medium' }, { l: 'Medium', i: 'High' },
-    { l: 'Low', i: 'Low' }, { l: 'Low', i: 'Medium' }, { l: 'Low', i: 'High' },
-  ];
 
   return (
     <div style={{ marginTop: '16px' }}>
