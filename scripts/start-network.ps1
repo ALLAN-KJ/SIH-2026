@@ -1,4 +1,4 @@
-$ROOT_DIR = $PSScriptRoot
+$ROOT_DIR = "$PSScriptRoot\.."
 
 Write-Host "Starting IPsec Sentinel in LOCAL NETWORK MODE..." -ForegroundColor Cyan
 

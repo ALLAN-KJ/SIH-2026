@@ -40,7 +40,7 @@ CORS_ORIGIN=http://localhost:5173
 python -m venv venv
 # Windows: .\venv\Scripts\activate | Unix: source venv/bin/activate
 pip install -r requirements.txt
-python main.py
+python -m backend.main
 ```
 
 ### Frontend (Audit Console)
