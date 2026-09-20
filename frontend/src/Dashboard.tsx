@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { API_URL } from './api';
 import gsap from 'gsap';
 import { prefersReducedMotion } from './components/ui';
 
@@ -326,7 +327,7 @@ export function Dashboard() {
 
     const ping = async () => {
       try {
-        const res = await fetch('/health', { method: 'GET', signal: AbortSignal.timeout(4000) });
+        const res = await fetch(`${API_URL}/health`, { method: 'GET', signal: AbortSignal.timeout(4000) });
         if (!cancelled) setHealthStatus(res.ok ? 'online' : 'offline');
       } catch {
         if (!cancelled) setHealthStatus('offline');
