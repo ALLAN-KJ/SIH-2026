@@ -41,6 +41,19 @@ We recommend **Render** for the backend because it natively supports Python and 
 
 ---
 
+## 1.5. Preventing Render "Spin-Down" (Keep-Alive)
+
+Render's free tier automatically spins down web services after 15 minutes of inactivity. When the next request comes in, the backend experiences a "cold start" which can take 30–60 seconds, leading to a poor demo experience.
+
+To mitigate this during active hours, set up a free uptime monitor to ping the backend:
+
+1. **Sign up for a free monitor:** Use a service like [UptimeRobot](https://uptimerobot.com/) or [cron-job.org](https://cron-job.org/).
+2. **Add your monitor:**
+   - **URL:** Your deployed backend URL + `/health` (e.g., `https://ipsec-sentinel-backend.onrender.com/health`)
+   - **Interval:** Every 10 or 14 minutes.
+3. **Important Note:** This is a *mitigation*, not a guarantee. Render may still occasionally spin down the container, and free monitors sometimes skip checks. However, this will drastically reduce cold starts during the periods the pinger is active, without triggering heavy application logic or consuming API quotas.
+
+---
 ## 2. Frontend Deployment (Vercel)
 
 We recommend **Vercel** for the frontend for zero-config Vite deployments.

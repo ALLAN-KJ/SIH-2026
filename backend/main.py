@@ -82,6 +82,10 @@ def check_groq_health():
     except Exception as e:
         logging.error(f"❌ CRITICAL WARNING: Groq API health check failed: {e}. Remediation WILL silently fall back!")
 
+@app.get("/health")
+def health_check():
+    """Lightweight endpoint for uptime pingers to keep the backend warm."""
+    return {"status": "ok", "service": "ipsec-sentinel-api"}
 
 @app.post("/assess", response_model=AssessResponse)
 def assess_ipsec(request: IPsecRequest):
