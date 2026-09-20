@@ -7,14 +7,12 @@ except ImportError:
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, UploadFile, File
-from pydantic import BaseModel
-import joblib
-import pandas as pd
-import shap
-import numpy as np
 import tempfile
 import os
 from typing import List, Optional
+
+from backend.schemas import IPsecRequest, AssessResponse
+from backend.services.risk_engine import evaluate_risk
 from backend.llm_copilot import router as llm_router
 from backend.pqc_scorer import router as pqc_router
 from backend.audit_trail import router as audit_router
@@ -85,107 +83,12 @@ def check_groq_health():
         logging.error(f"❌ CRITICAL WARNING: Groq API health check failed: {e}. Remediation WILL silently fall back!")
 
 
-# Load models and preprocessors globally
-try:
-    # MODEL METADATA LIMITATION: Trained on synthetic data constructed from real 
-    # IETF/NIST-documented IKE parameter combinations; not yet validated against 
-    # a labeled real-world traffic corpus.
-    model = joblib.load(os.path.join(os.path.dirname(__file__), "models", "xgb_model.joblib"))
-    preprocessor = joblib.load(os.path.join(os.path.dirname(__file__), "models", "preprocessor.joblib"))
-    label_encoder = joblib.load(os.path.join(os.path.dirname(__file__), "models", "label_encoder.joblib"))
-    feature_names = joblib.load(os.path.join(os.path.dirname(__file__), "models", "feature_names.joblib"))
-    
-    # Initialize SHAP explainer
-    # TreeExplainer is used for XGBoost
-    explainer = shap.TreeExplainer(model)
-except Exception as e:
-    print(f"Warning: Could not load ML models. Ensure they are trained. Error: {e}")
-    model, preprocessor, label_encoder, feature_names, explainer = None, None, None, None, None
-
-class IPsecRequest(BaseModel):
-    ike_version: str
-    ike_mode: str
-    encryption_algorithm: str
-    key_length_bits: int
-    hash_algorithm: str
-    dh_group: int
-    auth_method: str
-    operation_mode: str
-    pfs_enabled: bool
-    sa_lifetime_seconds: int
-    
-class AssessResponse(BaseModel):
-    risk_score: float
-    risk_label: str
-    top_contributing_factors: dict
-    flagged_issues: List[str]
-
 @app.post("/assess", response_model=AssessResponse)
 def assess_ipsec(request: IPsecRequest):
-    if not model:
-        raise HTTPException(status_code=500, detail="Model not loaded")
-        
-    req_dict = request.model_dump()
-    df = pd.DataFrame([req_dict])
-    
     try:
-        X_processed = preprocessor.transform(df)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Preprocessing error: {e}")
-        
-    # Predict probabilities and label
-    # In XGBoost, if objective is multi-class, predict_proba gives per-class probs
-    probs = model.predict_proba(X_processed)[0]
-    pred_idx = model.predict(X_processed)[0]
-    risk_label = label_encoder.inverse_transform([pred_idx])[0]
-    
-    # To compute a continuous risk score (0-100) from the ML model's class probabilities, 
-    # we apply a weighted sum based on standard CVSS v3.1 qualitative severity ratings mapped to a 0-100 scale:
-    # - 'Strong'   -> 0   (CVSS None/Low risk equivalent, fully secure)
-    # - 'Moderate' -> 50  (CVSS Medium severity midpoint)
-    # - 'Weak'     -> 75  (CVSS High severity midpoint)
-    # - 'Critical' -> 100 (CVSS Critical severity maximum)
-    # This translates the model's probabilistic distribution across these classes into a single severity metric.
-    class_weights = {"Strong": 0, "Moderate": 50, "Weak": 75, "Critical": 100}
-    classes = label_encoder.classes_
-    risk_score = sum(probs[i] * class_weights.get(classes[i], 50) for i in range(len(classes)))
-    
-    # SHAP Explainability
-    shap_values = explainer.shap_values(X_processed)
-    
-    # Handle multi-class SHAP values
-    if isinstance(shap_values, list):
-        class_shap = shap_values[pred_idx][0]
-    elif len(shap_values.shape) == 3:
-        # shape: (n_samples, n_features, n_classes)
-        class_shap = shap_values[0, :, pred_idx]
-    else:
-        class_shap = shap_values[0]
-        
-    feature_impacts = {feature_names[i]: float(class_shap[i]) for i in range(len(feature_names))}
-    
-    sorted_features = sorted(feature_impacts.items(), key=lambda x: abs(x[1]), reverse=True)
-    top_factors = dict(sorted_features[:3])
-    
-    flagged_issues = []
-    if request.encryption_algorithm in ["DES", "3DES", "RC4"]:
-        flagged_issues.append(f"Weak encryption algorithm: {request.encryption_algorithm}")
-    if request.key_length_bits < 128:
-        flagged_issues.append("Key length is dangerously short")
-    if request.hash_algorithm in ["MD5", "SHA1"]:
-        flagged_issues.append(f"Weak hashing algorithm: {request.hash_algorithm}")
-    if not request.pfs_enabled:
-        flagged_issues.append("Perfect Forward Secrecy (PFS) is disabled")
-        
-    if risk_label == "Critical" and not flagged_issues:
-        flagged_issues.append("Model detected high risk combinations in DH group and lifetime")
-        
-    return AssessResponse(
-        risk_score=round(risk_score, 2),
-        risk_label=risk_label,
-        top_contributing_factors=top_factors,
-        flagged_issues=flagged_issues
-    )
+        return evaluate_risk(request)
+    except ValueError as e:
+        raise HTTPException(status_code=500 if "Model not loaded" in str(e) else 400, detail=str(e))
 
 @app.post("/upload_pcap", response_model=IPsecRequest)
 async def upload_pcap(request: Request, file: UploadFile = File(...)):
