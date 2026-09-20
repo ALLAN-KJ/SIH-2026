@@ -30,20 +30,17 @@ def validate_config(config: str) -> bool:
         
     config_lower = config.lower()
     
-    # Must contain at least one of these primary keywords
-    valid_keywords = ["crypto", "isakmp", "ipsec", "transform-set", "ikev2", "proposal", "policy"]
-    if not any(k in config_lower for k in valid_keywords):
-        return False
-        
-    # Strict allowlist of permitted first tokens in the configuration output
+    # Strict allowlist of permitted FIRST TOKENS in any valid Cisco IOS IPsec line
     allowed_keywords = {
         "crypto", "encryption", "hash", "group", "authentication", 
         "lifetime", "proposal", "policy", "set", "match", "exit", 
         "end", "integrity", "prf", "mode", "peer", "version", "address",
-        "access-list", "isakmp", "ipsec", "transform-set", "description"
+        "access-list", "isakmp", "ipsec", "transform-set", "description",
+        "permit", "deny"
     }
     
     lines = config.strip().split('\n')
+    valid_line_count = 0
     for line in lines:
         line_clean = line.strip().lower()
         if not line_clean or line_clean.startswith('!'):
@@ -54,10 +51,15 @@ def validate_config(config: str) -> bool:
             continue
             
         if tokens[0] not in allowed_keywords:
-            # First token doesn't match allowlist, reject
+            # First token MUST exactly match allowlist
             return False
+            
+        valid_line_count += 1
         
-    # Explicit denylist of dangerous/destructive commands
+    if valid_line_count == 0:
+        return False
+        
+    # Explicit denylist of dangerous/destructive commands (acts as a secondary safety net)
     denylist_patterns = [
         r'\berase\b',
         r'\breload\b',

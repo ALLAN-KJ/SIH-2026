@@ -7,8 +7,17 @@ export interface IPsecRequest {
   dh_group: number;
   auth_method: string;
   operation_mode: string;
+  ip_version: string;
   pfs_enabled: boolean;
   sa_lifetime_seconds: number;
+  esp_features?: {
+    esp_packet_count: number;
+    esp_mean_size: number;
+    esp_var_size: number;
+    esp_mean_iat: number;
+    esp_var_iat: number;
+    esp_duration: number;
+  };
 }
 
 export interface AssessResponse {
@@ -16,6 +25,8 @@ export interface AssessResponse {
   risk_label: string;
   top_contributing_factors: Record<string, number>;
   flagged_issues: string[];
+  predicted_traffic_type?: string;
+  traffic_confidence?: number;
 }
 
 export interface RemediateRequest {
@@ -72,6 +83,7 @@ export interface VerifyResponse {
 
 // Unified Result Type for the Dashboard
 export interface AnalysisResult {
+  ipsec_request: IPsecRequest;
   risk: AssessResponse;
   remediation: RemediateResponse;
   pqc: PQCResponse;

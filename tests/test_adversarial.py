@@ -1,15 +1,16 @@
-import requests
+from fastapi.testclient import TestClient
+from backend.main import app
 import json
 import time
 
-BASE_URL = "http://localhost:8000"
+client = TestClient(app)
 
 def test_pipeline():
     print("--- Testing Adversarial/Malformed PCAP (Empty File) ---")
     
     # 1. Upload Empty File
     files = {'file': ('empty.pcap', b'', 'application/vnd.tcpdump.pcap')}
-    resp = requests.post(f"{BASE_URL}/upload_pcap", files=files)
+    resp = client.post("/upload_pcap", files=files)
     print(f"Upload Empty PCAP Status: {resp.status_code}")
     print(f"Upload Empty PCAP Content: {resp.text}")
 
@@ -17,7 +18,7 @@ def test_pipeline():
     # 2. Upload Corrupted File
     corrupted_data = b'NOT A REAL PCAP \x00\x01\x02\x03\x04\x05'
     files = {'file': ('corrupt.pcap', corrupted_data, 'application/vnd.tcpdump.pcap')}
-    resp = requests.post(f"{BASE_URL}/upload_pcap", files=files)
+    resp = client.post("/upload_pcap", files=files)
     print(f"Upload Corrupted PCAP Status: {resp.status_code}")
     print(f"Upload Corrupted PCAP Content: {resp.text}")
     

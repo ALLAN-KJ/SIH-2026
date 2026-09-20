@@ -2,8 +2,9 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import type { AssessResponse } from '../../types';
 import { Card, CardHeader, Overline, SevBadge, Mono, sev, prefersReducedMotion } from '../ui';
+import { ThreatMatrix } from './ThreatMatrix';
 
-export const RiskPanel = ({ risk }: { risk: AssessResponse }) => {
+export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }) => {
   const s = sev(risk.risk_label);
   const scoreRef = useRef<HTMLSpanElement>(null);
 
@@ -54,9 +55,74 @@ export const RiskPanel = ({ risk }: { risk: AssessResponse }) => {
           fontSize: 'var(--text-sm)',
           lineHeight: 'var(--text-sm--line-height)',
           color: 'var(--color-text-2)',
+          marginBottom: '24px'
         }}>
           {risk.flagged_issues.length > 0 ? risk.flagged_issues[0] : 'No critical issues flagged.'}
         </p>
+
+        {/* IPsec Extracted Parameters */}
+        {ipsec && (
+          <div style={{ marginBottom: '24px' }}>
+            <Overline>Extracted Cleartext Metadata (Exposure Report)</Overline>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '8px' }}>
+              The following connection parameters were exposed in cleartext during IKE negotiation:
+            </p>
+            <div style={{
+              marginTop: '8px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+              gap: '12px',
+              padding: '12px',
+              backgroundColor: 'var(--color-well)',
+              border: '1px solid var(--color-border-dim)',
+              borderRadius: '6px'
+            }}>
+              <div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>Protocol</div>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-1)' }}>{ipsec.ike_version}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>IP Version</div>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-1)' }}>{ipsec.ip_version}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>Mode</div>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-1)' }}>{ipsec.operation_mode}</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ESP Traffic Classification */}
+        {risk.predicted_traffic_type && (
+          <div style={{ marginBottom: '24px' }}>
+            <Overline>Encrypted Traffic Classification</Overline>
+            <div style={{
+              marginTop: '8px',
+              padding: '12px',
+              backgroundColor: 'var(--color-well)',
+              border: '1px solid var(--color-border-dim)',
+              borderRadius: '6px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                </svg>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
+                  {risk.predicted_traffic_type}
+                </span>
+              </div>
+              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                Confidence: <span style={{ color: 'var(--color-text-1)', fontWeight: 500 }}>{risk.traffic_confidence}%</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ThreatMatrix riskLabel={risk.risk_label} />
 
         {/* Technical Details (progressive disclosure) */}
         <details style={{ marginTop: '24px' }}>

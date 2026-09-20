@@ -47,6 +47,13 @@ crypto ikev2 policy POLICY-1
     assert validate_config(bad_config_allowlist_fail) == False, "Allowlist should reject 'hostname'"
     assert validate_config(bad_config_embedded) == False, "Embedded reload should be caught"
     
+    # Regression tests from Critique
+    good_access_list = "access-list 100 permit ip any any"
+    assert validate_config(good_access_list) == True, "Should allow access-list"
+    
+    bad_crypto_typo = "cryptomap test"
+    assert validate_config(bad_crypto_typo) == False, "Should block 'cryptomap' typo"
+    
     print("validate_config() allowlist & denylist tests passed successfully!")
 
 if __name__ == "__main__":

@@ -75,7 +75,7 @@ const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
       if (!logRes.ok) throw new Error('Failed to log audit trail');
       const audit: AuditLogResponse = await logRes.json();
   
-      return { risk, remediation, pqc, audit };
+      return { ipsec_request: ipsecReq, risk, remediation, pqc, audit };
     },
     async probeTarget(target_ip: string, auth_confirmation: string, override_rfc1918: boolean): Promise<AnalysisResult> {
       const probeRes = await fetch(`${API_URL}/probe/active`, {
@@ -143,6 +143,6 @@ const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
       if (!logRes.ok) throw new Error('Failed to log audit trail');
       const audit: AuditLogResponse = await logRes.json();
   
-      return { risk, remediation, pqc, audit };
+      return { ipsec_request: ipsecReq, risk, remediation, pqc, audit };
     }
   };
