@@ -3,7 +3,7 @@ $ROOT_DIR = $PSScriptRoot
 Write-Host "Starting IPsec Sentinel..." -ForegroundColor Cyan
 
 $port = if ($env:PORT) { $env:PORT } else { 8000 }
-$portInUse = Get-NetTCPConnection -LocalPort $port -ErrorAction SilentlyContinue
+$portInUse = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
 if ($portInUse) {
     Write-Host "❌ ERROR: Port $port is already in use by PID $($portInUse.OwningProcess[0])." -ForegroundColor Red
     Write-Host "Please free the port or specify a different PORT before starting." -ForegroundColor Yellow

@@ -339,8 +339,12 @@ const ErrorBanner = ({ message, onDismiss }: { message: string; onDismiss: () =>
 
 export default function App() {
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<'passive' | 'active'>('passive');
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [mode, setMode] = useState<'passive' | 'active'>(
+    () => window.location.hash.includes('mode=active') ? 'active' : 'passive'
+  );
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(
+    () => window.location.hash.includes('mode=demo')
+  );
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
   const [lastSuccessfulRemediation, setLastSuccessfulRemediation] = useState<RemediateResponse | null>(null);
@@ -433,7 +437,7 @@ export default function App() {
     setError(null);
     setResults(null);
     try {
-      const res = await api.probeTarget(ip, auth, false);
+      const res = await api.probeTarget(ip, auth, true);
       setResults(res);
       if (!res.remediation.explanation.includes("Remediation unavailable")) {
         setLastSuccessfulRemediation(res.remediation);

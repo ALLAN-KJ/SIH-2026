@@ -3,6 +3,7 @@ venv/
 __pycache__/
 *.pyc
 *.pcap
+!frontend/public/*.pcap
 frontend/node_modules/
 frontend/dist/
 .pytest_cache/
@@ -10,6 +11,7 @@ frontend/dist/
 
 # Runtime data — never commit live DB or probe log
 backend/data/audit.db
+backend/data/tampered.db
 backend/data/active_probe_audit.log
 
 # ML model binaries — large, regeneratable via eda_and_training.py

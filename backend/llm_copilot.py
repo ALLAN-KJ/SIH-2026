@@ -35,12 +35,13 @@ def validate_config(config: str) -> bool:
     if not any(k in config_lower for k in valid_keywords):
         return False
         
-    # Strict allowlist of permitted line prefixes in the configuration output
-    allowed_prefixes = [
+    # Strict allowlist of permitted first tokens in the configuration output
+    allowed_keywords = {
         "crypto", "encryption", "hash", "group", "authentication", 
         "lifetime", "proposal", "policy", "set", "match", "exit", 
-        "end", "integrity", "prf", "mode", "peer", "version", "address"
-    ]
+        "end", "integrity", "prf", "mode", "peer", "version", "address",
+        "access-list", "isakmp", "ipsec", "transform-set", "description"
+    }
     
     lines = config.strip().split('\n')
     for line in lines:
@@ -48,14 +49,12 @@ def validate_config(config: str) -> bool:
         if not line_clean or line_clean.startswith('!'):
             continue
             
-        is_allowed = False
-        for prefix in allowed_prefixes:
-            if line_clean.startswith(prefix):
-                is_allowed = True
-                break
-                
-        if not is_allowed:
-            # Line doesn't match allowlist, reject
+        tokens = line_clean.split()
+        if not tokens:
+            continue
+            
+        if tokens[0] not in allowed_keywords:
+            # First token doesn't match allowlist, reject
             return False
         
     # Explicit denylist of dangerous/destructive commands
@@ -135,6 +134,14 @@ from starlette.concurrency import run_in_threadpool
 @router.post("/remediate", response_model=RemediationResponse)
 async def remediate_ipsec(request_data: RemediationRequest, request: Request):
     check_rate_limit(request, limit=5, window=60)
+    
+    if not request_data.flagged_issues:
+        return RemediationResponse(
+            explanation="No security issues detected. This configuration meets current best practices for strong cryptography.",
+            nist_citation="N/A",
+            config_diff="! No remediation necessary. Configuration is secure."
+        )
+        
     prompt = build_prompt(request_data)
     
     api_key = os.environ.get("GROQ_API_KEY")

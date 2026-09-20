@@ -45,7 +45,7 @@ def _make_proposal(prop_num: int, enc_id, enc_keylen: int, integ_id, prf_id, dh_
     prf = ikev2.IKEv2_Transform(transform_type='PRF', transform_id=prf_id)
     dh = ikev2.IKEv2_Transform(transform_type='GroupDesc', transform_id=dh_id)
     
-    prop = ikev2.IKEv2_Proposal(proposal=prop_num, proto='IKE', trans=[enc, integ, prf, dh])
+    prop = ikev2.IKEv2_Proposal(proposal=prop_num, proto='IKE', trans_nb=4, trans=enc/integ/prf/dh)
     return prop
 
 
@@ -70,7 +70,7 @@ def craft_and_send_probe(target_ip: str) -> str:
     ke_payload = ikev2.IKEv2_KE(next_payload='Nonce', group=14, ke=os.urandom(256))
     ni_payload = ikev2.IKEv2_Nonce(next_payload='None', nonce=os.urandom(32))
     
-    ike_pkt = ikev2.IKEv2(init_SPI=os.urandom(8), next_payload='SA', exch_type='IKE_SA_INIT') / sa_payload / ke_payload / ni_payload
+    ike_pkt = ikev2.IKEv2(init_SPI=os.urandom(8), next_payload='SA', exch_type='IKE_SA_INIT', flags='Initiator') / sa_payload / ke_payload / ni_payload
     raw_bytes = bytes(ike_pkt)
     
     try:
