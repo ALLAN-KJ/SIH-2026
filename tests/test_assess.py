@@ -14,6 +14,7 @@ def test_assess_endpoint():
         "dh_group": 1,
         "auth_method": "Pre-Shared Key",
         "operation_mode": "Tunnel",
+        "ip_version": "IPv4",
         "pfs_enabled": False,
         "sa_lifetime_seconds": 86400
     }

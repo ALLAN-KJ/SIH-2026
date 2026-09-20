@@ -503,6 +503,29 @@ export default function App() {
           </button>
           {results && (
             <button
+            onClick={() => window.print()}
+            className="transition-default"
+            style={{
+              fontSize: 'var(--text-sm)',
+              fontWeight: 500,
+              color: 'var(--color-text-1)',
+              backgroundColor: 'transparent',
+              padding: '8px 16px',
+              border: '1px solid var(--color-border)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+            }}
+          >
+            Export Report
+          </button>
+          )}
+          {results && (
+            <button
             onClick={() => { setResults(null); setError(null); }}
             className="transition-default"
             style={{
@@ -556,7 +579,7 @@ export default function App() {
 
         {results && (
           <div ref={resultsRef} className="results-grid">
-            <RiskPanel risk={results.risk} />
+            <RiskPanel risk={results.risk} ipsec={results.ipsec_request} />
             <PQCPanel pqc={results.pqc} />
             <LLMPanel
               remediation={results.remediation}

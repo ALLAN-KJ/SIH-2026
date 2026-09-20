@@ -2,6 +2,11 @@ import os
 from scapy.all import rdpcap, UDP
 import scapy.contrib.ikev2 as ikev2
 from scapy.layers.isakmp import ISAKMP, ISAKMP_payload_SA, ISAKMP_payload_Proposal, ISAKMP_payload_Transform
+from scapy.layers.inet import IP
+from scapy.layers.inet6 import IPv6
+import sys
+sys.path.append(os.path.dirname(__file__))
+from esp_traffic_classifier import extract_esp_features
 
 def parse_ikev1_transform(t_list, result, depth=0):
     if depth > 5:
@@ -25,6 +30,9 @@ def parse_ikev1_transform(t_list, result, depth=0):
                 else: result["dh_group"] = 0
             elif t == 'KeyLength':
                 result["key_length_bits"] = int(v)
+            elif t == 'Encapsulation':
+                if v == 1: result["operation_mode"] = "Tunnel"
+                elif v == 2: result["operation_mode"] = "Transport"
 
 def parse_ike_negotiation(pcap_path: str) -> dict:
     if not os.path.exists(pcap_path):
@@ -42,6 +50,7 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
             "dh_group": 0,
             "auth_method": "Unknown",
             "operation_mode": "Tunnel",
+            "ip_version": "Unknown",
             "pfs_enabled": False,
             "sa_lifetime_seconds": 3600
         }
@@ -50,11 +59,24 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
             if idx >= 100:
                 break
             
+            if pkt.haslayer(IP) and result["ip_version"] == "Unknown":
+                result["ip_version"] = "IPv4"
+            elif pkt.haslayer(IPv6) and result["ip_version"] == "Unknown":
+                result["ip_version"] = "IPv6"
+            
             if pkt.haslayer(ikev2.IKEv2):
                 result["ike_version"] = "IKEv2"
                 result["ike_mode"] = "Main"
                 result["pfs_enabled"] = True
                 result["sa_lifetime_seconds"] = 86400
+                
+                if pkt.haslayer(ikev2.IKEv2_Notify):
+                    notify = pkt.getlayer(ikev2.IKEv2_Notify)
+                    # Loop through notify layers in case there are multiple
+                    while notify:
+                        if getattr(notify, 'type', None) == 16391:
+                            result["operation_mode"] = "Transport"
+                        notify = notify.payload.getlayer(ikev2.IKEv2_Notify) if notify.payload else None
                 
                 if pkt.haslayer(ikev2.IKEv2_SA):
                     sa = pkt[ikev2.IKEv2_SA]
@@ -123,6 +145,14 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
 
     if result["ike_version"] == "Unknown":
         raise ValueError("No valid IKE negotiation found in the PCAP file. Ensure the file contains IKEv1 or IKEv2 UDP traffic on port 500 or 4500.")
+
+    # Extract ESP features
+    try:
+        esp_features = extract_esp_features(pcap_path)
+        result["esp_features"] = esp_features
+    except Exception as e:
+        print(f"Warning: ESP feature extraction failed: {e}")
+        result["esp_features"] = None
 
     return result
 

@@ -213,3 +213,34 @@
     transform: none;
   }
 }
+
+/* ── Print Styles (Phase 5 Export) ── */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  * {
+    color: black !important;
+    background-color: transparent !important;
+    border-color: #ddd !important;
+    box-shadow: none !important;
+  }
+  header, footer, button {
+    display: none !important;
+  }
+  .results-grid {
+    display: block !important;
+  }
+  .results-grid > div {
+    break-inside: avoid;
+    margin-bottom: 24px;
+    border: 1px solid #ccc !important;
+  }
+  details > summary {
+    display: none !important;
+  }
+  details > div, details {
+    display: block !important;
+  }
+}
