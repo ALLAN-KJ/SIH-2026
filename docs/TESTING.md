@@ -83,8 +83,8 @@ If you are using the public deployed backend, it cannot reach your local contain
 1. Download and run the Playit.gg agent.
 2. Follow the prompt to link the agent to your account.
 3. In the Playit dashboard, create a Custom UDP Tunnel pointing to your local strongSwan container (e.g., `127.0.0.1:500`).
-4. Playit will assign you a public address (e.g., `147.185.221.X:YYYYY`).
-5. In the Active Probe UI, enter this IP address (and port if supported), and check **Override RFC1918 Restriction**.
+4. Playit assigns a public address. (For this project's live SIH demo, use your persistent tunnel: **`della-seamless.tun.ply.gg:35709`**).
+5. In the Active Probe UI, enter this address, and check **Override RFC1918 Restriction**.
 
 #### Option 2: Free-Tier Cloud VM
 Spin up a small, free-tier cloud VM (e.g., AWS EC2 `t2.micro` or GCP `e2-micro`), install Docker, and run the `tests/strongswan/docker-compose.weak.yml` stack directly on the VM. You can then probe the VM's public IP address.
