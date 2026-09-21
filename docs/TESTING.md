@@ -66,6 +66,9 @@ We have provided two pre-configured profiles for the strongSwan responder:
 ### Generating Live Active Probes
 The Active Probe feature allows you to send synthetic IKEv2 handshakes to a live target and evaluate the response. By default, this is restricted to RFC1918 private IP addresses.
 
+> [!CAUTION]
+> **Authorization Policy:** You must only probe infrastructure that you own or have explicit written authorization to scan. During development, a one-time validation probe was fired at `vpn.strongswan.org` (a publicly documented interoperability test server). **This is NOT the intended pattern for demos or general use.** Do not probe third-party servers. All SIH presentations and normal usage must target your own local strongSwan container or an explicitly authorized cloud VM.
+
 ### Testing Locally
 If you are running the backend locally (`localhost:8000`), you can simply use the IP address of your local strongSwan Docker container (e.g., `10.5.0.10`).
 
