@@ -50,7 +50,7 @@ def _make_proposal(prop_num: int, enc_id, enc_keylen: int, integ_id, prf_id, dh_
 
 
 
-def craft_and_send_probe(target_ip: str) -> str:
+def craft_and_send_probe(target_ip: str, target_port: int) -> str:
     import socket
     
     # Proposal 1: Strong — AES-256/SHA2-256/PRF-SHA2-256/MODP-2048 (modern)
@@ -76,16 +76,16 @@ def craft_and_send_probe(target_ip: str) -> str:
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.settimeout(8.0)
-        sock.sendto(raw_bytes, (target_ip, 500))
+        sock.sendto(raw_bytes, (target_ip, target_port))
         resp_bytes, _ = sock.recvfrom(65535)
     except socket.timeout:
-        raise ValueError("Target unreachable or did not respond to IKEv2 SA_INIT on port 500.")
+        raise ValueError(f"Target unreachable or did not respond to IKEv2 SA_INIT on port {target_port}.")
     finally:
         sock.close()
         
     # Reconstruct packets for PCAP writing so the parser can read them identically
-    fake_req_pkt = IP(src="10.0.0.1", dst=target_ip) / UDP(sport=500, dport=500) / ike_pkt
-    fake_res_pkt = IP(src=target_ip, dst="10.0.0.1") / UDP(sport=500, dport=500) / ikev2.IKEv2(resp_bytes)
+    fake_req_pkt = IP(src="10.0.0.1", dst=target_ip) / UDP(sport=500, dport=target_port) / ike_pkt
+    fake_res_pkt = IP(src=target_ip, dst="10.0.0.1") / UDP(sport=target_port, dport=500) / ikev2.IKEv2(resp_bytes)
     
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pcap") as tmp:
         wrpcap(tmp.name, [fake_req_pkt, fake_res_pkt])
@@ -94,6 +94,7 @@ def craft_and_send_probe(target_ip: str) -> str:
 
 @router.post("/probe/active")
 async def probe_active(req: ActiveProbeRequest, request: Request):
+    import socket
     check_rate_limit(request, limit=1, window=10)
     
     # 1. Mandatory Authorization Gate
@@ -101,12 +102,24 @@ async def probe_active(req: ActiveProbeRequest, request: Request):
         log_audit_attempt(req.target_ip, req.auth_confirmation, False, "Invalid authorization confirmation phrase.")
         raise HTTPException(status_code=403, detail="Unauthorized: You must explicitly confirm authorization.")
         
+    # Parse potential host:port format from Playit.gg
+    target_host = req.target_ip
+    target_port = 500
+    if ":" in target_host and not target_host.startswith("[") and target_host.count(":") == 1:
+        parts = target_host.split(":")
+        target_host = parts[0]
+        try:
+            target_port = int(parts[1])
+        except ValueError:
+            pass
+
     # 2. RFC1918 Default Restriction
     try:
-        ip_obj = ipaddress.ip_address(req.target_ip)
-    except ValueError:
-        log_audit_attempt(req.target_ip, req.auth_confirmation, False, "Invalid IP address.")
-        raise HTTPException(status_code=400, detail="Invalid IP address format.")
+        resolved_ip = socket.gethostbyname(target_host)
+        ip_obj = ipaddress.ip_address(resolved_ip)
+    except (socket.gaierror, ValueError):
+        log_audit_attempt(req.target_ip, req.auth_confirmation, False, "Invalid IP address or unresolvable domain.")
+        raise HTTPException(status_code=400, detail="Invalid IP address or unresolvable domain.")
         
     if not (ip_obj.is_private or ip_obj.is_loopback):
         if not req.override_rfc1918:
@@ -116,7 +129,7 @@ async def probe_active(req: ActiveProbeRequest, request: Request):
     log_audit_attempt(req.target_ip, req.auth_confirmation, True, "Probe initiated.")
     
     try:
-        pcap_path = await run_in_threadpool(craft_and_send_probe, req.target_ip)
+        pcap_path = await run_in_threadpool(craft_and_send_probe, resolved_ip, target_port)
     except Exception as e:
         raise HTTPException(status_code=504, detail=str(e))
         
