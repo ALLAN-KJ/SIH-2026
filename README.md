@@ -7,6 +7,11 @@ IPsec Sentinel is a security auditing engine that ingests IPsec VPN negotiation 
 *   **PQC Readiness Scoring:** Evaluates current configuration against proposed IANA draft identifiers for ML-KEM and estimates vulnerability to Shor's algorithm (Grover search mitigation via AES-256).
 *   **Encrypted Traffic Classification:** Machine Learning (Random Forest) model to classify ESP payload traffic types (VoIP, Video, Web, Chat) based on metadata (packet size, inter-arrival time) without decryption.
 *   **NIST SP 800-77 Compliance:** Automated evaluation of IPsec parameters (encryption, hash, DH group, SA lifetime, PFS, and Replay Protection capability).
+*   **Interactive Threat Matrix:** Visual dashboard categorizing vulnerabilities into Weak, Moderate, and Critical impact zones based on the XGBoost risk assessment.
+*   **AI Confidence Score:** Provides transparent ML certainty metrics for risk predictions and traffic classifications.
+*   **Executive & Technical Reporting:** Automatically generates downloadable reports tailored for C-suite (risk summaries) and technical engineers (deep-dive remediation).
+*   **Metadata Exposure Detection:** Identifies and flags leakage of sensitive configuration metadata from IPsec negotiations.
+*   **Tunnel/Transport & IPv4/IPv6 Detection:** Automatically parses and differentiates between IPsec Tunnel and Transport modes, as well as IPv4/IPv6 traffic.
 *   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP is unavailable.
 *   **LLM Remediation Copilot:** Auto-generates vendor-specific (Cisco IOS) CLI configuration fixes to remediate identified vulnerabilities.
 *   **Tamper-Evident Audit Trail:** Merkle-tree based cryptographic logging for compliance and forensic integrity.

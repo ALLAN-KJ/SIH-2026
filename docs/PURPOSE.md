@@ -6,11 +6,12 @@ This document serves as an evaluation guide for Smart India Hackathon (SIH) judg
 As quantum computing matures, classical cryptography (like RSA and current Diffie-Hellman groups) used in VPNs is at risk of "harvest now, decrypt later" attacks. Additionally, legacy VPN deployments often suffer from critical misconfigurations (e.g., using DES, MD5, or lacking Perfect Forward Secrecy) that lead to immediate compromise. 
 
 **IPsec Sentinel** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
-1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations.
+1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations. Includes an **Interactive Threat Matrix** to categorize impact zones and an **AI Confidence Score** (via SHAP) to show prediction certainty.
 2. **Estimated Post-Quantum Readiness Assessment**: Estimates if the negotiated Key Exchange Mechanisms (KEMs) withstand Shor's algorithm, based on proposed IANA KEM identifiers (not yet finalized).
 3. **LLM Remediation Copilot**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq.
 4. **Tamper-Evident Audit Trail**: Persists logs using a local SQLite Merkle tree structure to ensure historical analysis records are tamper-evident.
 5. **Active Live Probe** (`/api/probe/active`): Crafts and sends a real IKEv2 SA_INIT packet to a target gateway (UDP 500), captures the response, and feeds it through the identical risk/PQC/remediation/audit pipeline as the passive PCAP flow. Requires explicit authorization confirmation. Default safety restriction: only RFC1918 private IPs and loopback are probed without an explicit override flag.
+6. **Reporting & Exposure Detection**: Provides **Executive and Technical report generation**, flags **Metadata exposure** risks in IPsec negotiations, and automatically parses **Tunnel vs. Transport modes** and **IPv4 vs. IPv6** traffic.
 
 ## Pipeline Architecture
 The pipeline is fully integrated and end-to-end. There are NO mocked paths for the risk scoring, PCAP parsing, or LLM generation.
