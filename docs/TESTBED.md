@@ -32,11 +32,16 @@ To ensure realistic training data for the ESP classifier, the statistical proper
 - **Email**: Moderate rate, variable size (400-1100 bytes) with timing that can mimic Web browsing behavior.
 
 ### 3. Dataset Format
-The output dataset is located in `dataset/`.
+The main output dataset is located in `dataset/`.
 It contains:
 - `500` PCAP files named using the pattern `tunnel_{id}_{encryption}_{dh}_{traffic}_{ip}_{mode}.pcap`
 - `labels.csv`: The ground truth mapping for each PCAP to train the ML models.
 - `dataset/testbed_configs/`: The generated `ipsec.conf` files corresponding to each scenario.
+
+### 4. Real-World Validation Captures
+To validate the synthetic model against genuine traffic, a separate set of real captures is maintained in `dataset/real_captures/`.
+These are generated using actual strongSwan endpoints (via Docker) and captured with `tcpdump`, rather than Scapy.
+- **Synthetic vs. Real Training Data**: The ML model was predominantly trained on synthetic data constructed from real IETF/NIST-documented IKE parameter combinations (e.g., standard cipher suites and DH groups). However, a small validation set of genuinely real IPsec captures (generated via strongSwan Docker containers and tcpdump) exists in `dataset/real_captures/` to ground the ESP classifier's accuracy on non-simulated traffic. On a small preliminary validation set of 2 real strongSwan captures (not yet at a scale to claim statistical significance), the ESP classifier correctly classified 2/2 samples. This is an encouraging early signal but does not substitute for a larger real-world validation study.
 
 ### How to Regenerate
 To regenerate the dataset, run:

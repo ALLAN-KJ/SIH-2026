@@ -19,7 +19,11 @@ export const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:80
         method: 'POST',
         body: formData,
       });
-      if (!uploadRes.ok) throw new Error('Failed to parse PCAP');
+      if (!uploadRes.ok) {
+        let msg = 'Failed to parse PCAP';
+        try { const err = await uploadRes.json(); msg = err.detail || msg; } catch {}
+        throw new Error(msg);
+      }
       const ipsecReq: IPsecRequest = await uploadRes.json();
   
       // 2. Assess Risk

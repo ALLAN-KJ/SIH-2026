@@ -4,6 +4,7 @@ import scapy.contrib.ikev2 as ikev2
 from scapy.layers.isakmp import ISAKMP, ISAKMP_payload_SA, ISAKMP_payload_Proposal, ISAKMP_payload_Transform
 from scapy.layers.inet import IP
 from scapy.layers.inet6 import IPv6
+from scapy.layers.ipsec import ESP
 import sys
 sys.path.append(os.path.dirname(__file__))
 from esp_traffic_classifier import extract_esp_features
@@ -40,6 +41,7 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
     
     try:
         packets = rdpcap(pcap_path)
+        has_esp = False
         
         result = {
             "ike_version": "Unknown",
@@ -58,6 +60,9 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
         for idx, pkt in enumerate(packets):
             if idx >= 100:
                 break
+            
+            if pkt.haslayer(ESP):
+                has_esp = True
             
             if pkt.haslayer(IP) and result["ip_version"] == "Unknown":
                 result["ip_version"] = "IPv4"
@@ -144,7 +149,10 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
         raise ValueError(f"Unable to parse IKE negotiation from this file: malformed payload or parsing error ({str(e)})")
 
     if result["ike_version"] == "Unknown":
-        raise ValueError("No valid IKE negotiation found in the PCAP file. Ensure the file contains IKEv1 or IKEv2 UDP traffic on port 500 or 4500.")
+        if has_esp:
+            raise ValueError("This capture contains ESP traffic but no IKE negotiation. IPsec Sentinel analyzes cryptographic configuration from the IKE handshake; ESP-only captures (where the tunnel was already established) are outside current scope. Support for negotiation-independent analysis is a planned enhancement.")
+        else:
+            raise ValueError("No valid IKE negotiation found in the PCAP file. Ensure the file contains IKEv1 or IKEv2 UDP traffic on port 500 or 4500.")
 
     # Extract ESP features
     try:

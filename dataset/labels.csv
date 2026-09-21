@@ -499,3 +499,6 @@ tunnel_496_AES-256-CBC_20_Email_IPv4_Transport.pcap,Transport,IPv4,AES-256-CBC,2
 tunnel_497_AES-256-GCM_14_Web_IPv4_Tunnel.pcap,Tunnel,IPv4,AES-256-GCM,14,False,Web
 tunnel_498_AES-256-GCM_19_Email_IPv4_Transport.pcap,Transport,IPv4,AES-256-GCM,19,True,Email
 tunnel_499_AES-128-CBC_19_Email_IPv6_Tunnel.pcap,Tunnel,IPv6,AES-128-CBC,19,False,Email
+real_strong.pcap,Tunnel,IPv4,AES-256-GCM,32,True,ICMP
+real_weak.pcap,Tunnel,IPv4,3DES,24,False,ICMP
+r e a l _ s t r o n g _ h t t p . p c a p , S t r o n g , s t r o n g - t u n n e l , I P v 4 , T u n n e l , a e s 2 5 6 g c m 1 6 - e c p 3 8 4 ! , H T T P 
