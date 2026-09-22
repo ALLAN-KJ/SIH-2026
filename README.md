@@ -48,9 +48,8 @@ CORS_ORIGIN=http://localhost:5173
 ``bash
 python -m venv venv
 # Windows: .\venv\Scripts\activate | Unix: source venv/bin/activate
-cd backend
-pip install -r requirements.txt
-python -m uvicorn main:app --reload
+pip install -r backend/requirements.txt
+python -m uvicorn backend.main:app --reload
 ``
 
 ### Frontend (Audit Console)
