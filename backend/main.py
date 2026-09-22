@@ -9,6 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, UploadFile, File
 import tempfile
 import os
+import sys
+
+# Render deployment failsafe: dynamically ensure the repo root is in sys.path
+# so absolute imports like `from backend.schemas import ...` resolve correctly
+# even if Render's "Root Directory" is incorrectly set to `backend/`.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
 from typing import List, Optional
 
 from backend.schemas import IPsecRequest, AssessResponse
