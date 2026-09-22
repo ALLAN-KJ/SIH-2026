@@ -50,7 +50,7 @@ export interface PQCRequest {
 
 export interface PQCResponse {
   pqc_score: number;
-  is_quantum_safe: boolean;
+  pqc_status: string;
   details: Record<string, {
     status: string;
     reason: string;

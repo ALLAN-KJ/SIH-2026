@@ -2,7 +2,7 @@ import type { PQCResponse } from '../../types';
 import { Card, CardHeader, SevBadge, sev } from '../ui';
 
 export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
-  const label = pqc.is_quantum_safe ? 'Strong' : 'Critical';
+  const label = pqc.pqc_status === 'Quantum-Safe' ? 'Strong' : pqc.pqc_status === 'Unrecognized' ? 'Moderate' : 'Critical';
   const s = sev(label);
   return (
     <Card id="panel-pqc" className="panel-secondary">
@@ -25,7 +25,7 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
             {pqc.pqc_score}
           </span>
           <span style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-3)' }}>/100</span>
-          <SevBadge label={pqc.is_quantum_safe ? 'Estimated Safe' : 'Vulnerable'} sev={s} />
+          <SevBadge label={pqc.pqc_status} sev={s} />
         </div>
 
         <p style={{
@@ -33,8 +33,10 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
           lineHeight: 'var(--text-base--line-height)',
           color: 'var(--color-text-2)',
         }}>
-          {pqc.is_quantum_safe
+          {pqc.pqc_status === 'Quantum-Safe'
             ? "Estimated to use quantum-resistant algorithms (Note: IANA identifiers for ML-KEM are still in draft)."
+            : pqc.pqc_status === 'Unrecognized'
+            ? "This key exchange group ID is not in our known classical or PQC identifier list. This may indicate a newer/vendor-specific value not yet mapped, not necessarily a vulnerability."
             : "This configuration relies on classical algorithms vulnerable to Shor's algorithm."}
         </p>
 
@@ -59,7 +61,7 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
           </summary>
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {Object.entries(pqc.details).map(([category, detail]) => {
-              const detailSev = detail.status === 'Safe' ? sev('Strong') : sev('Critical');
+              const detailSev = detail.status === 'Safe' ? sev('Strong') : detail.status === 'Unrecognized' ? sev('Moderate') : sev('Critical');
               return (
                 <div key={category} className="transition-default" style={{
                   padding: '12px 16px',

@@ -11,7 +11,7 @@ class PQCRequest(BaseModel):
 
 class PQCResponse(BaseModel):
     pqc_score: int
-    is_quantum_safe: bool
+    pqc_status: str
     details: dict
 
 def evaluate_pqc_readiness(req: PQCRequest) -> PQCResponse:
@@ -20,7 +20,9 @@ def evaluate_pqc_readiness(req: PQCRequest) -> PQCResponse:
     
     # Evaluate Encryption Algorithm (Grover's algorithm halves effective key size)
     # 256-bit keys are considered quantum-safe for symmetric encryption.
-    if req.key_length_bits >= 256 and req.encryption_algorithm.startswith("AES"):
+    if req.encryption_algorithm == "Unknown" or req.encryption_algorithm.isdigit():
+        details["encryption"] = {"status": "Unrecognized", "reason": f"Encryption algorithm '{req.encryption_algorithm}' is unrecognized. Cannot reliably determine quantum safety."}
+    elif req.key_length_bits >= 256 and req.encryption_algorithm.startswith("AES"):
         details["encryption"] = {"status": "Safe", "reason": "Symmetric key >= 256 bits resists Grover's algorithm."}
     else:
         score -= 30
@@ -28,7 +30,9 @@ def evaluate_pqc_readiness(req: PQCRequest) -> PQCResponse:
         
     # Evaluate Hashing Algorithm
     # SHA-384 and SHA-512 are considered quantum-safe.
-    if req.hash_algorithm in ["SHA384", "SHA512"]:
+    if req.hash_algorithm == "Unknown" or req.hash_algorithm.isdigit():
+        details["hashing"] = {"status": "Unrecognized", "reason": f"Hashing algorithm '{req.hash_algorithm}' is unrecognized. Cannot reliably determine quantum safety."}
+    elif req.hash_algorithm in ["SHA384", "SHA512"]:
         details["hashing"] = {"status": "Safe", "reason": f"{req.hash_algorithm} provides adequate collision resistance post-quantum."}
     else:
         score -= 20
@@ -44,23 +48,30 @@ def evaluate_pqc_readiness(req: PQCRequest) -> PQCResponse:
         1030: "Hybrid-SECP256R1-ML-KEM"
     }
 
+    pqc_status = "Quantum-Safe"
+
     if req.dh_group in PQC_KEM_GROUPS:
         kem_name = PQC_KEM_GROUPS[req.dh_group]
         details["key_exchange"] = {"status": "Safe", "reason": f"Uses quantum-resistant KEM: {kem_name}."}
     elif req.dh_group in CLASSICAL_DH_GROUPS or req.dh_group == 0:
         score -= 50
+        pqc_status = "Classically Vulnerable"
         details["key_exchange"] = {"status": "Critical Vulnerability", "reason": f"DH Group {req.dh_group} is classical and entirely broken by Shor's algorithm."}
     else:
-        score -= 50
-        details["key_exchange"] = {"status": "Unknown", "reason": f"Unknown DH Group {req.dh_group}, assuming not quantum safe."}
+        pqc_status = "Unrecognized"
+        details["key_exchange"] = {"status": "Unrecognized", "reason": f"This key exchange group ID is not in our known classical or PQC identifier list. This may indicate a newer/vendor-specific value not yet mapped, not necessarily a vulnerability."}
 
     # Floor score at 0
     score = max(0, score)
-    is_safe = score == 100
+    
+    if score < 100 and pqc_status == "Quantum-Safe":
+        pqc_status = "Classically Vulnerable"
+    elif pqc_status == "Quantum-Safe" and (details["encryption"]["status"] == "Unrecognized" or details["hashing"]["status"] == "Unrecognized"):
+        pqc_status = "Unrecognized"
     
     return PQCResponse(
         pqc_score=score,
-        is_quantum_safe=is_safe,
+        pqc_status=pqc_status,
         details=details
     )
 
