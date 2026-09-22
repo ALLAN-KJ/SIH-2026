@@ -28,9 +28,20 @@ def test_pqc_endpoint():
 
     assert response_bad.status_code == 200
     assert response_bad.json()["pqc_score"] == 0
-    assert response_bad.json()["is_quantum_safe"] is False
+    assert response_bad.json()["pqc_status"] == "Classically Vulnerable"
     assert response_good.json()["pqc_score"] == 100
-    assert response_good.json()["is_quantum_safe"] is True
+    assert response_good.json()["pqc_status"] == "Quantum-Safe"
+    
+    # Test Unrecognized
+    payload_unrecognized = {
+        "encryption_algorithm": "AES-256-GCM",
+        "key_length_bits": 256,
+        "hash_algorithm": "SHA384",
+        "dh_group": 9999
+    }
+    response_unrec = client.post("/pqc_score", json=payload_unrecognized)
+    assert response_unrec.status_code == 200
+    assert response_unrec.json()["pqc_status"] == "Unrecognized"
 
 if __name__ == "__main__":
     test_pqc_endpoint()

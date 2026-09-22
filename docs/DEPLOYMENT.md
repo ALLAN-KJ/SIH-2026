@@ -23,9 +23,9 @@ We recommend **Render** for the backend because it natively supports Python and 
 3. Configure the service:
    - **Name:** `ipsec-sentinel-backend` (or your choice)
    - **Environment:** `Python 3`
-   - **Root Directory:** `backend`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   - **Root Directory:** *(leave blank)*
+   - **Build Command:** `pip install -r backend/requirements.txt`
+   - **Start Command:** `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
 4. **Environment Variables:**
    - `GROQ_API_KEY`: Your Groq API key for LLM remediation.
    - `CORS_ORIGIN`: *Leave blank for now. We will set this in Step 3 after deploying the frontend.*

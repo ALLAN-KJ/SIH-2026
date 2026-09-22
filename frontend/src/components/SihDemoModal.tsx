@@ -117,12 +117,14 @@ export const SihDemoModal = ({
               {results.pqc.pqc_score}<span style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-3)', fontWeight: 400 }}>/100</span>
             </div>
             <div style={{ padding: '4px 8px', border: '1px solid var(--color-border)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              {results.pqc.is_quantum_safe ? 'Estimated Safe' : 'Vulnerable'}
+              {results.pqc.pqc_status}
             </div>
           </div>
           <p style={{ color: 'var(--color-text-1)', fontSize: 'var(--text-sm)' }}>
-            {results.pqc.is_quantum_safe 
+            {results.pqc.pqc_status === 'Quantum-Safe'
               ? "Estimated to use quantum-resistant algorithms (Note: IANA identifiers for ML-KEM are still in draft)."
+              : results.pqc.pqc_status === 'Unrecognized'
+              ? "This key exchange group ID is not in our known classical or PQC identifier list. This may indicate a newer/vendor-specific value not yet mapped, not necessarily a vulnerability."
               : "This configuration relies on classical algorithms vulnerable to Shor's algorithm."}
           </p>
         </div>

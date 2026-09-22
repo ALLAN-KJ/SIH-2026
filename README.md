@@ -48,9 +48,8 @@ CORS_ORIGIN=http://localhost:5173
 ``bash
 python -m venv venv
 # Windows: .\venv\Scripts\activate | Unix: source venv/bin/activate
-cd backend
-pip install -r requirements.txt
-python -m uvicorn main:app --reload
+pip install -r backend/requirements.txt
+python -m uvicorn backend.main:app --reload
 ``
 
 ### Frontend (Audit Console)
@@ -62,7 +61,7 @@ npm run dev
 
 ## Known Limitations
 - **Synthetic vs. Real Data:** The models were trained predominantly on 500 synthetically generated IPsec combinations. We have performed an initial validation against a small sample of 2 real-world strongSwan captures (2/2 correct classification) as an encouraging preliminary signal, but this is not yet a statistically significant sample size for real-world guarantees.
-- **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals.
+- **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals, utilizing a three-state model: **Quantum-Safe** (matches draft identifiers), **Classically Vulnerable** (matches known legacy groups), and **Unrecognized** (an unmapped ID). This prevents vendor-specific IDs from being silently penalized as vulnerabilities.
 - **LLM Remediation as Starting Point:** AI-generated Cisco IOS configurations are unverified starting points and must be reviewed by network engineers before production deployment.
 - **Tamper-Evident, not Tamper-Proof:** The SQLite Merkle-tree log proves if partial tampering occurred, but does not prevent an attacker with full filesystem access from deleting/replacing the entire database file outright.
 
