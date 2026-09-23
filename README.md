@@ -61,6 +61,7 @@ npm run dev
 ``
 
 ## Known Limitations
+- **Render Free Tier Cold-Starts:** The backend is deployed on Render's free tier. If the service is idle for 15 minutes, it spins down. The **first request after idle may take 50+ seconds** to respond. This is expected. If presenting, ping the backend health endpoint first to warm it up.
 - **Synthetic vs. Real Data:** The models are trained entirely on 500 synthetically generated IPsec combinations. We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset.
 - **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals, utilizing a three-state model: **Quantum-Safe** (matches draft identifiers), **Classically Vulnerable** (matches known legacy groups), and **Unrecognized** (an unmapped ID). This prevents vendor-specific IDs from being silently penalized as vulnerabilities.
 - **LLM Remediation as Starting Point:** AI-generated Cisco IOS configurations are unverified starting points and must be reviewed by network engineers before production deployment.
