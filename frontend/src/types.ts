@@ -18,15 +18,21 @@ export interface IPsecRequest {
     esp_var_iat: number;
     esp_duration: number;
   };
+  metadata_exposure?: string;
 }
 
 export interface AssessResponse {
   risk_score: number;
   risk_label: string;
+  risk_confidence?: number;
   top_contributing_factors: Record<string, number>;
   flagged_issues: string[];
-  predicted_traffic_type?: string;
+  esp_anomaly_status?: string;
+  esp_anomaly_score?: number;
+  is_esp_anomaly?: boolean;
+  traffic_type?: string;
   traffic_confidence?: number;
+  metadata_exposure?: string;
 }
 
 export interface RemediateRequest {

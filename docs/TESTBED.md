@@ -41,7 +41,7 @@ It contains:
 ### 4. Real-World Validation Captures
 To validate the synthetic model against genuine traffic, a separate set of real captures is maintained in `dataset/real_captures/`.
 These are generated using actual strongSwan endpoints (via Docker) and captured with `tcpdump`, rather than Scapy.
-- **Synthetic vs. Real Training Data**: The ML model was predominantly trained on synthetic data constructed from real IETF/NIST-documented IKE parameter combinations (e.g., standard cipher suites and DH groups). However, a small validation set of genuinely real IPsec captures (generated via strongSwan Docker containers and tcpdump) exists in `dataset/real_captures/` to ground the ESP classifier's accuracy on non-simulated traffic. On a small preliminary validation set of 2 real strongSwan captures (not yet at a scale to claim statistical significance), the ESP classifier correctly classified 2/2 samples. This is an encouraging early signal but does not substitute for a larger real-world validation study.
+- **Synthetic vs. Real Training Data**: The ML models are trained entirely on synthetic data constructed from real IETF/NIST-documented IKE parameter combinations (e.g., standard cipher suites and DH groups). We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset. The `dataset/real_captures/` folder contains structural validation tests, but not enough samples to guarantee real-world classification accuracy.
 
 ### How to Regenerate
 To regenerate the dataset, run:

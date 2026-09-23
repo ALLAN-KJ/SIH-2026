@@ -49,6 +49,16 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
           </span>
           <span style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-3)' }}>/100</span>
           <SevBadge label={risk.risk_label} sev={s} />
+          {risk.risk_confidence !== undefined && (
+            <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
+                AI Confidence: {risk.risk_confidence}%
+              </span>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                (how sure the model is about this specific prediction)
+              </span>
+            </div>
+          )}
         </div>
 
         <p style={{
@@ -90,15 +100,62 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
                 <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-1)' }}>{ipsec.operation_mode}</div>
               </div>
             </div>
+            
+            {risk.metadata_exposure && (
+              <div style={{
+                marginTop: '12px',
+                padding: '12px',
+                backgroundColor: risk.metadata_exposure.includes('Public') ? 'var(--color-crit-subtle)' : 'var(--color-well)',
+                border: `1px solid ${risk.metadata_exposure.includes('Public') ? 'var(--color-crit)' : 'var(--color-border-dim)'}`,
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: risk.metadata_exposure.includes('Public') ? 'var(--color-crit)' : 'var(--color-text-1)' }}>
+                  Metadata Exposure: {risk.metadata_exposure}
+                </span>
+              </div>
+            )}
           </div>
         )}
 
         {/* ESP Traffic Classification */}
-        {risk.predicted_traffic_type && (
+        {risk.esp_anomaly_status && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>Encrypted Traffic Classification</Overline>
+            <Overline>ESP Traffic Classification</Overline>
+            
+            {/* Traffic Type Prediction */}
+            {risk.traffic_type && (
+              <div style={{
+                marginTop: '8px',
+                marginBottom: '8px',
+                padding: '12px',
+                backgroundColor: 'var(--color-well)',
+                border: '1px solid var(--color-border-dim)',
+                borderRadius: '6px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
+                    Predicted Traffic: {risk.traffic_type}
+                  </span>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
+                    AI Confidence: {risk.traffic_confidence}%
+                  </div>
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+                    (model certainty of traffic type)
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Anomaly Detection */}
             <div style={{
-              marginTop: '8px',
               padding: '12px',
               backgroundColor: 'var(--color-well)',
               border: '1px solid var(--color-border-dim)',
@@ -108,17 +165,30 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
               alignItems: 'center'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={risk.is_esp_anomaly ? "var(--color-crit)" : "var(--color-accent)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {risk.is_esp_anomaly ? (
+                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
+                  ) : (
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  )}
+                  {risk.is_esp_anomaly ? (
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                  ) : (
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  )}
+                  {risk.is_esp_anomaly && <line x1="12" y1="16" x2="12.01" y2="16" />}
                 </svg>
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
-                  {risk.predicted_traffic_type}
+                  {risk.esp_anomaly_status}
                 </span>
               </div>
               <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
-                Confidence: <span style={{ color: 'var(--color-text-1)', fontWeight: 500 }}>{risk.traffic_confidence}%</span>
+                Anomaly Score: <span style={{ color: 'var(--color-text-1)', fontWeight: 500 }}>{risk.esp_anomaly_score}</span>
               </div>
             </div>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginTop: '6px', lineHeight: 1.4 }}>
+              *Traffic classification uses timing/size heuristics and requires no payload decryption.
+            </p>
           </div>
         )}
 
@@ -149,58 +219,43 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '16px' }}>
               XGBoost classifier · SHAP explainability
             </p>
-            {/* SHAP table */}
-            <Overline>Top contributing factors</Overline>
-            <div style={{
-              marginTop: '8px',
-              border: '1px solid var(--color-border-dim)',
-              borderRadius: '6px',
-              overflow: 'hidden',
-              backgroundColor: 'var(--color-well)',
-            }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid var(--color-border-dim)' }}>
-                    <th style={{
-                      padding: '10px 16px',
-                      fontSize: 'var(--text-xs)',
-                      fontWeight: 500,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase' as const,
-                      color: 'var(--color-text-3)',
-                      textAlign: 'left',
-                    }}>Feature</th>
-                    <th style={{
-                      padding: '10px 16px',
-                      fontSize: 'var(--text-xs)',
-                      fontWeight: 500,
-                      letterSpacing: '0.06em',
-                      textTransform: 'uppercase' as const,
-                      color: 'var(--color-text-3)',
-                      textAlign: 'right',
-                    }}>SHAP Impact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(risk.top_contributing_factors).map(([k, v]) => (
-                    <tr key={k} className="transition-default" style={{ borderBottom: '1px solid var(--color-border-dim)' }}>
-                      <td style={{ padding: '10px 16px' }}>
-                        <Mono style={{ color: 'var(--color-text-1)' }}>{k}</Mono>
-                      </td>
-                      <td className="font-mono" style={{
-                        padding: '10px 16px',
-                        textAlign: 'right',
-                        fontSize: 'var(--text-sm)',
-                        fontWeight: 500,
-                        fontVariantNumeric: 'tabular-nums',
-                        color: s.fg,
-                      }}>
-                        {v > 0 ? '+' : ''}{v.toFixed(3)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* SHAP chart */}
+            <div style={{ marginBottom: '16px' }}>
+              <Overline>Why this score?</Overline>
+              <div style={{
+                marginTop: '8px',
+                border: '1px solid var(--color-border-dim)',
+                borderRadius: '6px',
+                padding: '16px',
+                backgroundColor: 'var(--color-well)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px'
+              }}>
+                {Object.entries(risk.top_contributing_factors).map(([k, v]) => {
+                  const maxAbs = Math.max(...Object.values(risk.top_contributing_factors).map(Math.abs), 0.1);
+                  const width = `${Math.abs(v) / maxAbs * 100}%`;
+                  const isPositive = v > 0;
+                  return (
+                    <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--text-xs)' }}>
+                        <span style={{ color: 'var(--color-text-1)' }}><Mono>{k}</Mono></span>
+                        <span style={{ color: isPositive ? s.fg : 'var(--color-mod)', fontWeight: 500 }}>
+                          {isPositive ? '+' : ''}{v.toFixed(3)}
+                        </span>
+                      </div>
+                      <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--color-border)', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div style={{
+                          width,
+                          height: '100%',
+                          backgroundColor: isPositive ? s.fg : 'var(--color-mod)',
+                          borderRadius: '3px',
+                        }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Flagged issues */}

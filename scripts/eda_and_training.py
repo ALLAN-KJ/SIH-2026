@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import shap
 import matplotlib.pyplot as plt
-import seaborn as sns
+
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -15,7 +15,7 @@ import json
 
 def main():
     print("Loading dataset...")
-    df = pd.read_csv("ipsec_synthetic_dataset.csv")
+    df = pd.read_csv("backend/data/ipsec_synthetic_dataset.csv")
     
     # ---------------------------
     # Step 1: EDA
@@ -79,8 +79,12 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(X_processed, y_encoded, test_size=0.2, stratify=y_encoded, random_state=42)
     
     print("Training XGBoost Classifier...")
-    xgb = XGBClassifier(eval_metric='mlogloss', random_state=42)
-    xgb.fit(X_train, y_train)
+    from sklearn.calibration import CalibratedClassifierCV
+    xgb_base = XGBClassifier(eval_metric='mlogloss', random_state=42, max_depth=2, learning_rate=0.05, reg_alpha=10, reg_lambda=10, n_estimators=50)
+    xgb_base.fit(X_train, y_train)
+    
+    xgb_calibrated = CalibratedClassifierCV(estimator=xgb_base, method='sigmoid', cv=5)
+    xgb_calibrated.fit(X_train, y_train)
     
     print("Training Random Forest...")
     rf = RandomForestClassifier(random_state=42)
@@ -88,7 +92,7 @@ def main():
     
     # Evaluation
     from sklearn.metrics import accuracy_score, classification_report
-    xgb_preds = xgb.predict(X_test)
+    xgb_preds = xgb_calibrated.predict(X_test)
     rf_preds = rf.predict(X_test)
     
     xgb_acc = accuracy_score(y_test, xgb_preds)
@@ -103,7 +107,7 @@ def main():
     
     # SHAP Explainer
     print("Calculating SHAP values...")
-    explainer = shap.TreeExplainer(xgb)
+    explainer = shap.TreeExplainer(xgb_base)
     shap_values = explainer.shap_values(X_test)
     
     # Save SHAP Summary Plot
@@ -123,10 +127,13 @@ def main():
     
     # Export Models
     print("Exporting models...")
-    joblib.dump(preprocessor, "preprocessor.joblib")
-    joblib.dump(xgb, "xgb_model.joblib")
-    joblib.dump(le, "label_encoder.joblib")
-    joblib.dump(feature_names, "feature_names.joblib")
+    import os
+    os.makedirs("backend/models", exist_ok=True)
+    joblib.dump(preprocessor, "backend/models/preprocessor.joblib")
+    joblib.dump(xgb_base, "backend/models/xgb_model.joblib")
+    joblib.dump(xgb_calibrated, "backend/models/xgb_calibrated.joblib")
+    joblib.dump(le, "backend/models/label_encoder.joblib")
+    joblib.dump(feature_names, "backend/models/feature_names.joblib")
     
     # Write EDA artifact
     with open("eda_report.md", "w") as f:

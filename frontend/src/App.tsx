@@ -9,6 +9,7 @@ import { PQCPanel } from './components/panels/PQCPanel';
 import { LLMPanel } from './components/panels/LLMPanel';
 import { AuditPanel } from './components/panels/AuditPanel';
 import { SihDemoModal } from './components/SihDemoModal';
+import { ReportExport } from './components/ReportExport';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -549,51 +550,31 @@ export default function App() {
             Guided Demo
           </button>
           {results && (
-            <button
-            onClick={() => window.print()}
-            className="transition-default"
-            style={{
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              color: 'var(--color-text-1)',
-              backgroundColor: 'transparent',
-              padding: '8px 16px',
-              border: '1px solid var(--color-border)',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-            }}
-          >
-            Export Report
-          </button>
+            <>
+              <ReportExport results={results} />
+              <button
+                onClick={() => { setResults(null); setError(null); }}
+                className="transition-default"
+                style={{
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 500,
+                  color: 'var(--color-text-1)',
+                  backgroundColor: 'transparent',
+                  padding: '8px 16px',
+                  border: '1px solid var(--color-border)',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                }}
+              >
+                New Analysis
+              </button>
+            </>
           )}
-          {results && (
-            <button
-            onClick={() => { setResults(null); setError(null); }}
-            className="transition-default"
-            style={{
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              color: 'var(--color-text-1)',
-              backgroundColor: 'transparent',
-              padding: '8px 16px',
-              border: '1px solid var(--color-border)',
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-            }}
-          >
-            New Analysis
-          </button>
-        )}
         </div>
       </header>
 

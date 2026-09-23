@@ -133,6 +133,10 @@ def check_rate_limit(request: Request, limit: int = 5, window: int = 60):
 
 from starlette.concurrency import run_in_threadpool
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 @router.post("/remediate", response_model=RemediationResponse)
 async def remediate_ipsec(request_data: RemediationRequest, request: Request):
     check_rate_limit(request, limit=5, window=60)
@@ -145,7 +149,6 @@ async def remediate_ipsec(request_data: RemediationRequest, request: Request):
         )
         
     prompt = build_prompt(request_data)
-    
     api_key = os.environ.get("GROQ_API_KEY")
     
     fallback_response = RemediationResponse(
@@ -155,11 +158,12 @@ async def remediate_ipsec(request_data: RemediationRequest, request: Request):
     )
 
     if not api_key or not Groq:
+        logger.warning("LLM FALLBACK TRIGGERED: API key missing or Groq not imported.")
         return fallback_response
 
     client = Groq(api_key=api_key)
     
-    max_retries = 3
+    max_retries = 2
     for attempt in range(max_retries):
         try:
             chat_completion = await run_in_threadpool(
@@ -175,19 +179,16 @@ async def remediate_ipsec(request_data: RemediationRequest, request: Request):
                     }
                 ],
                 model="qwen/qwen3.8-27b",
-                temperature=0,
+                temperature=0.1,
                 max_tokens=1024,
             )
             
             response_text = chat_completion.choices[0].message.content.strip()
             
-            # Sometimes the model adds markdown code blocks despite instructions
-            if response_text.startswith("```json"):
-                response_text = response_text[7:]
-            if response_text.startswith("```"):
-                response_text = response_text[3:]
-            if response_text.endswith("```"):
-                response_text = response_text[:-3]
+            # Robust JSON extraction via regex
+            json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
+            if json_match:
+                response_text = json_match.group(0)
                 
             parsed = json.loads(response_text)
             config_diff = parsed.get("config_diff", "")
@@ -195,6 +196,7 @@ async def remediate_ipsec(request_data: RemediationRequest, request: Request):
             if not validate_config(config_diff):
                 print(f"Config validation failed on attempt {attempt + 1}. Diff was:\n{config_diff}")
                 if attempt == max_retries - 1:
+                    logger.warning("LLM FALLBACK TRIGGERED: Config validation failed on all retries.")
                     return fallback_response
                 continue
 
@@ -207,12 +209,15 @@ async def remediate_ipsec(request_data: RemediationRequest, request: Request):
             safe_text = response_text.encode('ascii', 'ignore').decode('ascii')
             print(f"JSON Parsing Error on attempt {attempt + 1}: {e}\nResponse: {safe_text}")
             if attempt == max_retries - 1:
+                logger.warning(f"LLM FALLBACK TRIGGERED: JSON parse error on all retries. Last error: {e}")
                 return fallback_response
         except Exception as e:
             print(f"Groq API Error on attempt {attempt + 1}: {e}")
             if attempt == max_retries - 1:
+                logger.warning(f"LLM FALLBACK TRIGGERED: Groq API Error on all retries. Last error: {e}")
                 return fallback_response
             time.sleep(2 ** attempt) # Exponential backoff
             
+    logger.warning("LLM FALLBACK TRIGGERED: Exhausted all retries.")
     return fallback_response
 
