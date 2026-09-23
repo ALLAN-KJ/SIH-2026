@@ -1,0 +1,4 @@
+pcap_file,traffic_type,is_ipsec
+baseline_normal/baseline_normal_http.pcap,Normal_HTTP,False
+baseline_normal/baseline_normal_dns.pcap,Normal_DNS,False
+baseline_normal/baseline_normal_icmp.pcap,Normal_ICMP,False
