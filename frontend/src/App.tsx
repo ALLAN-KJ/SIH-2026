@@ -210,22 +210,48 @@ const UploadZone = ({ loading, fileInputRef, onFileChange, loadSample }: {
             }}>
               Drop .pcap / .pcapng or browse
             </span>
-            <button
-              type="button"
-              onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
-              className="transition-default"
-              style={{
-                fontSize: 'var(--text-sm)',
-                fontWeight: 500,
-                color: 'var(--color-text-1)',
-                padding: '6px 16px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'transparent',
-                cursor: 'pointer',
-              }}
-            >
-              Browse Files
-            </button>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); fileInputRef.current?.click(); }}
+                className="transition-default"
+                style={{
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 500,
+                  color: 'var(--color-text-1)',
+                  padding: '6px 16px',
+                  border: '1px solid var(--color-border)',
+                  backgroundColor: 'transparent',
+                  cursor: 'pointer',
+                }}
+              >
+                Browse Files
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const samples = ['scenario_critical_legacy.pcap', 'scenario_moderate_transition.pcap', 'scenario_strong_modern.pcap'];
+                  loadSample(samples[Math.floor(Math.random() * samples.length)]);
+                }}
+                className="transition-default"
+                style={{
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 500,
+                  color: 'var(--color-ground)',
+                  padding: '6px 16px',
+                  border: '1px solid var(--color-accent)',
+                  backgroundColor: 'var(--color-accent)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                Generate Demo PCAP
+              </button>
+            </div>
           </>
         )}
       </label>
@@ -482,6 +508,27 @@ export default function App() {
 
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => window.location.hash = '/'}
+            className="transition-default"
+            style={{
+              fontSize: 'var(--text-sm)',
+              fontWeight: 500,
+              color: 'var(--color-text-1)',
+              backgroundColor: 'transparent',
+              padding: '8px 16px',
+              border: '1px solid var(--color-border)',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+            }}
+          >
+            Homepage
+          </button>
           <button
             onClick={() => setIsDemoModalOpen(true)}
             className="transition-default"
