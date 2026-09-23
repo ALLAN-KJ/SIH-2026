@@ -5,13 +5,16 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
   remediation: RemediateResponse;
   onUseFallback?: () => void;
   hasFallback?: boolean;
-}) => (
-  <Card id="panel-llm" className="panel-secondary">
-    <CardHeader title="Remediation Copilot" />
+}) => {
+  const isFallback = remediation.explanation.includes("Remediation unavailable");
+  return (
+  <Card id="panel-llm" className="panel-secondary" style={isFallback ? { borderColor: 'var(--color-weak-border)' } : {}}>
+    <CardHeader title="Remediation Copilot" subtitle={isFallback ? "Fallback Configuration Loaded" : "Live LLM Generation"} />
     {/* Persistent disclaimer — never removed */}
     <div style={{
       padding: '8px 24px',
-      borderBottom: '1px solid var(--color-weak-border)',
+      borderBottom: '1px solid var(--color-border-dim)',
+      backgroundColor: isFallback ? 'var(--color-weak-muted)' : 'transparent',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -22,12 +25,16 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
         fontWeight: 500,
         letterSpacing: '0.04em',
         textTransform: 'uppercase' as const,
-        color: 'var(--color-weak)',
+        color: isFallback ? 'var(--color-weak)' : 'var(--color-text-3)',
         margin: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
       }}>
-        AI-generated — review before deploying
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        AI-generated — review before applying to production systems
       </p>
-      {remediation.explanation.includes("Remediation unavailable") && hasFallback && (
+      {isFallback && hasFallback && (
         <button
           onClick={onUseFallback}
           className="transition-default"
@@ -127,4 +134,5 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
       </details>
     </div>
   </Card>
-);
+  );
+};

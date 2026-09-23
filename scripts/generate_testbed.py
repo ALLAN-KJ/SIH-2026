@@ -32,7 +32,8 @@ TRAFFIC_PROFILE_RANGES = {
     "Video": {"size": (700, 1400), "size_var": (100, 400), "iat": (0.002, 0.015), "iat_var": (0.001, 0.005), "pkts": (400, 1000)},
     "Web":   {"size": (300, 1000), "size_var": (200, 600), "iat": (0.05, 0.3), "iat_var": (0.02, 0.15), "pkts": (50, 500)},
     "ICMP":  {"size": (64, 100), "size_var": (0, 0), "iat": (0.8, 1.5), "iat_var": (0.0, 0.1), "pkts": (5, 20)},
-    "Email": {"size": (400, 1100), "size_var": (50, 250), "iat": (0.1, 0.8), "iat_var": (0.05, 0.4), "pkts": (30, 400)}
+    "Email": {"size": (400, 1100), "size_var": (50, 250), "iat": (0.1, 0.8), "iat_var": (0.05, 0.4), "pkts": (30, 400)},
+    "WhatsApp": {"size": (40, 300), "size_var": (10, 50), "iat": (0.02, 0.1), "iat_var": (0.01, 0.05), "pkts": (100, 500)}
 }
 
 def generate_strongswan_config(filename, mode, enc, dh, pfs, ip_version):

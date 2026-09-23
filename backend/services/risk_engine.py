@@ -1,17 +1,19 @@
 import os
 import joblib
 import pandas as pd
+import numpy as np
 import shap
 from backend.schemas import AssessResponse
 
 # Load models and preprocessors globally
-model, preprocessor, label_encoder, feature_names, explainer = None, None, None, None, None
+model, model_calibrated, preprocessor, label_encoder, feature_names, explainer = None, None, None, None, None, None
 
 def load_models():
-    global model, preprocessor, label_encoder, feature_names, explainer
+    global model, model_calibrated, preprocessor, label_encoder, feature_names, explainer
     try:
         base_dir = os.path.dirname(os.path.dirname(__file__))
         model = joblib.load(os.path.join(base_dir, "models", "xgb_model.joblib"))
+        model_calibrated = joblib.load(os.path.join(base_dir, "models", "xgb_calibrated.joblib"))
         preprocessor = joblib.load(os.path.join(base_dir, "models", "preprocessor.joblib"))
         label_encoder = joblib.load(os.path.join(base_dir, "models", "label_encoder.joblib"))
         feature_names = joblib.load(os.path.join(base_dir, "models", "feature_names.joblib"))
@@ -22,11 +24,11 @@ def load_models():
 # Call load_models at import time
 load_models()
 
-from backend.esp_traffic_classifier import predict_traffic_type
+from backend.esp_traffic_classifier import detect_esp_anomaly
 
 def evaluate_risk(request) -> AssessResponse:
-    if not model:
-        raise ValueError("Model not loaded")
+    if not model or not model_calibrated:
+        raise ValueError("Models not loaded")
         
     req_dict = request.model_dump()
     # Remove esp_features before feeding to the XGBoost risk model (it wasn't trained on it)
@@ -40,8 +42,8 @@ def evaluate_risk(request) -> AssessResponse:
     except Exception as e:
         raise ValueError(f"Preprocessing error: {e}")
         
-    probs = model.predict_proba(X_processed)[0]
-    pred_idx = model.predict(X_processed)[0]
+    probs = model_calibrated.predict_proba(X_processed)[0]
+    pred_idx = model_calibrated.predict(X_processed)[0]
     risk_label = label_encoder.inverse_transform([pred_idx])[0]
     
     class_weights = {"Strong": 0, "Moderate": 50, "Weak": 75, "Critical": 100}
@@ -82,14 +84,22 @@ def evaluate_risk(request) -> AssessResponse:
     if risk_label == "Critical" and not flagged_issues:
         flagged_issues.append("Model detected high risk combinations in DH group and lifetime")
         
-    # ESP Traffic Classification
-    traffic_pred = predict_traffic_type(request.esp_features)
+    # ESP Traffic Classification (Anomaly + Multi-class)
+    anomaly_res = detect_esp_anomaly(request.esp_features)
+    
+    # Calculate confidence (max probability from XGBoost)
+    risk_confidence = float(np.max(probs) * 100)
         
     return AssessResponse(
         risk_score=round(risk_score, 2),
         risk_label=risk_label,
+        risk_confidence=round(risk_confidence, 1),
         top_contributing_factors=top_factors,
         flagged_issues=flagged_issues,
-        predicted_traffic_type=traffic_pred.get("predicted_traffic_type"),
-        traffic_confidence=traffic_pred.get("traffic_confidence")
+        esp_anomaly_status=anomaly_res.get("status"),
+        esp_anomaly_score=anomaly_res.get("anomaly_score"),
+        is_esp_anomaly=anomaly_res.get("is_anomaly"),
+        traffic_type=anomaly_res.get("traffic_type"),
+        traffic_confidence=anomaly_res.get("traffic_confidence"),
+        metadata_exposure=getattr(request, "metadata_exposure", None)
     )

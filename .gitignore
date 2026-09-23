@@ -4,10 +4,16 @@ __pycache__/
 *.pyc
 *.pcap
 !frontend/public/*.pcap
+!samples/*.pcap
 frontend/node_modules/
 frontend/dist/
 .pytest_cache/
 .vscode/
+
+# Root-level node_modules (stray from a root-level package.json)
+node_modules/
+package-lock.json
+package.json
 
 # Runtime data — never commit live DB or probe log
 backend/data/audit.db
@@ -15,13 +21,29 @@ backend/data/tampered.db
 backend/data/active_probe_audit.log
 
 # ML model binaries — large, regeneratable via eda_and_training.py
-# Comment these out if you want to include pre-trained models in the repo
 # backend/models/*.joblib
+
+# Dataset bulk configs — 500 generated tunnel configs, too large for VCS
+dataset/testbed_configs/
+
+# Large dataset zip — never commit
+dataset.zip
+
+# Build artifacts & scratch
+shap_summary.png
+eda_report.md
+test_ah.pcap
+test_ah.py
+test_xgb.py
+test_pdf.js
+verify_fix1.py
+verify_fix2.py
+verify_fix5.py
+audit_backend.py
 
 # OS artifacts
 .DS_Store
 Thumbs.db
-
 
 # IDE internals
 .agents/

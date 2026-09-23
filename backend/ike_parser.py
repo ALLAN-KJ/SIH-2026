@@ -4,7 +4,8 @@ import scapy.contrib.ikev2 as ikev2
 from scapy.layers.isakmp import ISAKMP, ISAKMP_payload_SA, ISAKMP_payload_Proposal, ISAKMP_payload_Transform
 from scapy.layers.inet import IP
 from scapy.layers.inet6 import IPv6
-from scapy.layers.ipsec import ESP
+from scapy.layers.ipsec import ESP, AH
+import ipaddress
 import sys
 sys.path.append(os.path.dirname(__file__))
 from esp_traffic_classifier import extract_esp_features
@@ -54,7 +55,11 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
             "operation_mode": "Tunnel",
             "ip_version": "Unknown",
             "pfs_enabled": False,
-            "sa_lifetime_seconds": 3600
+            "sa_lifetime_seconds": 3600,
+            "ah_supported": False,
+            "ah_spi": None,
+            "ah_sequence": None,
+            "ah_icv_length": None
         }
 
         for idx, pkt in enumerate(packets):
@@ -63,11 +68,46 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
             
             if pkt.haslayer(ESP):
                 has_esp = True
+            if pkt.haslayer(AH):
+                result["ah_supported"] = True
+                ah_layer = pkt[AH]
+                result["ah_spi"] = ah_layer.spi if hasattr(ah_layer, 'spi') else None
+                result["ah_sequence"] = ah_layer.seq if hasattr(ah_layer, 'seq') else None
+                if hasattr(ah_layer, 'icv') and ah_layer.icv is not None:
+                    result["ah_icv_length"] = len(ah_layer.icv)
+                elif hasattr(ah_layer, 'payloadlen'):
+                    # Payload len is in 32-bit words minus 2
+                    # The fixed header is 3 words (12 bytes). So ICV length is (payloadlen + 2 - 3) * 4.
+                    # Or simpler: the raw length of ICV is typically what follows seq up to padding.
+                    # We'll just extract len(icv) since scapy parses it if it knows the auth algo,
+                    # otherwise it dumps it in 'icv'.
+                    pass
             
             if pkt.haslayer(IP) and result["ip_version"] == "Unknown":
                 result["ip_version"] = "IPv4"
+                if "metadata_exposure" not in result:
+                    try:
+                        src_priv = ipaddress.ip_address(pkt[IP].src).is_private
+                        dst_priv = ipaddress.ip_address(pkt[IP].dst).is_private
+                        if not src_priv or not dst_priv:
+                            result["metadata_exposure"] = f"Public IPs visible (Src: {pkt[IP].src}, Dst: {pkt[IP].dst})"
+                        else:
+                            result["metadata_exposure"] = "None detected (RFC1918 internal IPs)"
+                    except:
+                        result["metadata_exposure"] = "Unknown"
+                        
             elif pkt.haslayer(IPv6) and result["ip_version"] == "Unknown":
                 result["ip_version"] = "IPv6"
+                if "metadata_exposure" not in result:
+                    try:
+                        src_priv = ipaddress.ip_address(pkt[IPv6].src).is_private
+                        dst_priv = ipaddress.ip_address(pkt[IPv6].dst).is_private
+                        if not src_priv or not dst_priv:
+                            result["metadata_exposure"] = f"Public IPs visible (Src: {pkt[IPv6].src}, Dst: {pkt[IPv6].dst})"
+                        else:
+                            result["metadata_exposure"] = "None detected (RFC1918 internal IPs)"
+                    except:
+                        result["metadata_exposure"] = "Unknown"
             
             if pkt.haslayer(ikev2.IKEv2):
                 result["ike_version"] = "IKEv2"
@@ -150,7 +190,7 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
 
     if result["ike_version"] == "Unknown":
         if has_esp:
-            raise ValueError("This capture contains ESP traffic but no IKE negotiation. IPsec Sentinel analyzes cryptographic configuration from the IKE handshake; ESP-only captures (where the tunnel was already established) are outside current scope. Support for negotiation-independent analysis is a planned enhancement.")
+            raise ValueError("This capture contains ESP-encrypted traffic but no IKE handshake — the analyzer requires the negotiation phase to assess security posture. ESP-only traffic analysis is planned but not yet supported.")
         else:
             raise ValueError("No valid IKE negotiation found in the PCAP file. Ensure the file contains IKEv1 or IKEv2 UDP traffic on port 500 or 4500.")
 
