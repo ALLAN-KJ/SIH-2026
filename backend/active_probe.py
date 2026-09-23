@@ -52,18 +52,27 @@ def _make_proposal(prop_num: int, enc_id, enc_keylen: int, integ_id, prf_id, dh_
 
 def craft_and_send_probe(target_ip: str, target_port: int) -> str:
     import socket
+    import random
     
-    # Proposal 1: Strong — AES-256/SHA2-256/PRF-SHA2-256/MODP-2048 (modern)
+    # Define proposals
     prop1 = _make_proposal(1, 'AES-CBC', 256, 'SHA2-256-128', 'PRF_HMAC_SHA2_256', '2048MODPgr')
-    
-    # Proposal 2: Moderate — AES-128/SHA1/PRF-SHA1/MODP-1536 (transitional)
     prop2 = _make_proposal(2, 'AES-CBC', 128, 'HMAC-SHA1-96', 'PRF_HMAC_SHA1', '1536MODPgr')
-    
-    # Proposal 3: Weak — 3DES/MD5/PRF-MD5/MODP-1024 (matches legacy strongSwan weak profile)
     prop3 = _make_proposal(3, '3DES', 0, 'HMAC-MD5-96', 'PRF_HMAC_MD5', '1024MODPgr')
     
-    # Chain proposals (IKEv2 SA payload contains ordered list; responder picks best match)
-    sa_payload = ikev2.IKEv2_SA(prop=prop1/prop2/prop3)
+    props = [prop1, prop2, prop3]
+    # Actively shuffle to bait the server into accepting a weaker algorithm if misconfigured (Downgrade Attack)
+    random.shuffle(props)
+    
+    # Re-assign sequential proposal numbers to remain RFC-compliant
+    for i, p in enumerate(props):
+        p.proposal = i + 1
+        
+    chained_props = props[0]
+    for p in props[1:]:
+        chained_props = chained_props / p
+        
+    # Chain proposals (IKEv2 SA payload contains ordered list; responder picks first acceptable match)
+    sa_payload = ikev2.IKEv2_SA(prop=chained_props)
     sa_payload.next_payload = 'KE'
     
     # KE payload for DH group 14 (2048-bit MODP) — required even if responder picks lower
