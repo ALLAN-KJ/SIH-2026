@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import type { AnalysisResult } from '../../types';
+import type { AnalysisResult } from '../types';
 import { X, ArrowRight, Check } from '@phosphor-icons/react';
 
 export const SihDemoModal = ({

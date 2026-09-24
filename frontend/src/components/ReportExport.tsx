@@ -1,8 +1,8 @@
 import React, { useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import type { AnalysisResult } from '../../types';
-import { Card, CardHeader, Overline, SevBadge, Mono, sev } from './ui';
+import type { AnalysisResult } from '../types';
+import { sev } from './ui';
 
 interface Props {
   results: AnalysisResult;
@@ -184,18 +184,20 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
           <div style={{ marginBottom: '30px' }}>
             <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>SHAP Explainability (Top Factors)</div>
             <ul style={{ paddingLeft: '20px', color: '#ccc', fontSize: '14px', lineHeight: '1.6' }}>
-              {Object.entries(results.risk.top_contributing_factors).map(([k, v]) => (
-                <li key={k}>{k}: <span style={{ color: v > 0 ? s.fg : '#ef4444' }}>{v > 0 ? '+' : ''}{v.toFixed(3)}</span></li>
-              ))}
+              {Object.entries(results.risk.top_contributing_factors).map(([k, val]) => {
+                const v = val as number;
+                return <li key={k}>{k}: <span style={{ color: v > 0 ? s.fg : '#ef4444' }}>{v > 0 ? '+' : ''}{v.toFixed(3)}</span></li>;
+              })}
             </ul>
           </div>
           
           <div style={{ marginBottom: '30px' }}>
             <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>PQC Breakdown</div>
             <ul style={{ paddingLeft: '20px', color: '#ccc', fontSize: '14px', lineHeight: '1.6' }}>
-              {Object.entries(results.pqc.details).map(([k, v]) => (
-                <li key={k}>{k}: {v.status} - {v.reason}</li>
-              ))}
+              {Object.entries(results.pqc.details).map(([k, val]) => {
+                const v = val as any;
+                return <li key={k}>{k}: {v.status} - {v.reason}</li>;
+              })}
             </ul>
           </div>
 

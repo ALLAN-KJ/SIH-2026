@@ -9,8 +9,8 @@ import { PQCPanel } from './components/panels/PQCPanel';
 import { LLMPanel } from './components/panels/LLMPanel';
 import { AuditPanel } from './components/panels/AuditPanel';
 import { SihDemoModal } from './components/SihDemoModal';
-import { UploadSimple, Crosshair, DownloadSimple, X, ArrowRight, Play, FileArrowUp, FileText } from '@phosphor-icons/react';
-
+import { ReportExport } from './components/ReportExport';
+import { X, Play, FileArrowUp, FileText } from '@phosphor-icons/react';
 /*
  * ═══════════════════════════════════════════════════════════════
  *  IPsec Sentinel — Audit Console

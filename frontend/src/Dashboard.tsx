@@ -29,7 +29,7 @@ function goToConsole(mode?: 'passive' | 'active' | 'demo') {
   window.location.hash = mode ? `#/console?mode=${mode}` : '#/console';
 }
 
-import { UploadSimple, Radar, Play, ArrowRight } from '@phosphor-icons/react';
+import { UploadSimple, Target, Play, ArrowRight } from '@phosphor-icons/react';
 
 /* ── Health dot ── */
 
@@ -434,7 +434,7 @@ export function Dashboard() {
               />
               <LaunchButton
                 id="dash-launch-active"
-                icon={<Radar weight="regular" size={20} />}
+                icon={<Target weight="regular" size={20} />}
                 label="Active Probe"
                 sublabel="Send live IKE handshakes to a target you own and are authorized to test"
                 accentColor="var(--color-weak)"
