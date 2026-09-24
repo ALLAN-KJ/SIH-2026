@@ -6,18 +6,18 @@ This document serves as an evaluation guide for Smart India Hackathon (SIH) judg
 As quantum computing matures, classical cryptography (like RSA and current Diffie-Hellman groups) used in VPNs is at risk of "harvest now, decrypt later" attacks. Additionally, legacy VPN deployments often suffer from critical misconfigurations (e.g., using DES, MD5, or lacking Perfect Forward Secrecy) that lead to immediate compromise. 
 
 **IPsec Sentinel** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
-1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations. Includes an **Interactive Threat Matrix** to categorize impact zones and an **AI Confidence Score** (via SHAP) to show prediction certainty.
+1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations. Includes an **Interactive Threat Matrix** to categorize impact zones and an **AI Confidence Score** (calibrated via Platt Scaling) to show true prediction probability.
 2. **Estimated Post-Quantum Readiness Assessment**: Estimates if the negotiated Key Exchange Mechanisms (KEMs) withstand Shor's algorithm, based on proposed IANA KEM identifiers (not yet finalized).
-3. **LLM Remediation Copilot**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq.
+3. **LLM Remediation Copilot**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq (using Qwen/Llama3 models).
 4. **Tamper-Evident Audit Trail**: Persists logs using a local SQLite Merkle tree structure to ensure historical analysis records are tamper-evident.
-5. **Active Live Probe** (`/api/probe/active`): Crafts and sends a real IKEv2 SA_INIT packet to a target gateway (UDP 500), captures the response, and feeds it through the identical risk/PQC/remediation/audit pipeline as the passive PCAP flow. Requires explicit authorization confirmation. Default safety restriction: only RFC1918 private IPs and loopback are probed without an explicit override flag.
-6. **Reporting & Exposure Detection**: Provides **Executive and Technical report generation**, flags **Metadata exposure** risks in IPsec negotiations, and automatically parses **Tunnel vs. Transport modes** and **IPv4 vs. IPv6** traffic.
+5. **Active Live Probe** (`/api/probe/active`): Crafts and sends a real IKEv2 SA_INIT packet (with downgrade attack simulation) to a target gateway (UDP 500), captures the response, and feeds it through the identical risk/PQC/remediation/audit pipeline as the passive PCAP flow. Requires explicit authorization confirmation. Default safety restriction: only RFC1918 private IPs and loopback are probed without an explicit override flag.
+6. **Reporting & Exposure Detection**: Provides **Executive and Technical PDF report generation**, flags **Metadata exposure** risks in cleartext IPsec negotiations, and extracts deep parameters including **AH (Authentication Header)** fields (`SPI`, `Sequence Number`, `ICV Length`).
 
 ## Pipeline Architecture
 The pipeline is fully integrated and end-to-end. There are NO mocked paths for the risk scoring, PCAP parsing, or LLM generation.
 
-1. **PCAP Parsing (`ike_parser.py`)**: Parses standard Scapy `ikev2` or `ISAKMP` payloads. Extracts transforms (Encryption, Hash, DH Group). *If no valid IKE negotiation is found, the system halts with a 400 Bad Request.* (Note: ESP-only captures where the tunnel is already established are outside current scope; analysis relies on the IKE handshake).
-2. **Feature Preprocessing & XGBoost Classification (`main.py`)**: Transforms extracted data using the trained `preprocessor.joblib`. Evaluates using `xgb_model.joblib`. Uses `shap` to output exactly *why* a decision was made.
+1. **PCAP Parsing (`ike_parser.py`)**: Parses standard Scapy `ikev2`, `ISAKMP`, and `AH` payloads. Extracts transforms (Encryption, Hash, DH Group), cleartext parameters, and Authentication Header fields. *If no valid IKE negotiation is found, the system halts with a 400 Bad Request.*
+2. **Feature Preprocessing & XGBoost Classification (`risk_engine.py`)**: Transforms extracted data using `preprocessor.joblib`. Evaluates risk probability using `xgb_calibrated.joblib` and evaluates SHAP explainability using the base `xgb_model.joblib`. Uses `shap` to output exactly *why* a decision was made.
 3. **PQC Scoring (`pqc_scorer.py`)**: Uses an explicit mapping of known DH groups to quantum-vulnerable or quantum-safe categories.
 4. **Remediation (`llm_copilot.py`)**: Given the SHAP values and flagged issues, calls the Groq API to generate a `cisco_ios.conf` diff to fix the identified vulnerabilities.
 5. **Auditing (`audit_trail.py`)**: Appends the report hash to a SQLite-backed Merkle tree, returning the unforgeable root hash.

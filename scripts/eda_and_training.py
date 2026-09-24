@@ -10,6 +10,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.utils.class_weight import compute_sample_weight
 import joblib
 import json
 
@@ -76,15 +77,16 @@ def main():
     
     # Train test split (Stratified)
     from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X_processed, y_encoded, test_size=0.2, stratify=y_encoded, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_processed, y_encoded, test_size=0.2, stratify=y_encoded, random_state=101)
     
     print("Training XGBoost Classifier...")
+    sample_weights = compute_sample_weight('balanced', y_train)
     from sklearn.calibration import CalibratedClassifierCV
-    xgb_base = XGBClassifier(eval_metric='mlogloss', random_state=42, max_depth=2, learning_rate=0.05, reg_alpha=10, reg_lambda=10, n_estimators=50)
-    xgb_base.fit(X_train, y_train)
+    xgb_base = XGBClassifier(eval_metric='mlogloss', random_state=101, max_depth=8, learning_rate=0.1, n_estimators=300)
+    xgb_base.fit(X_train, y_train, sample_weight=sample_weights)
     
     xgb_calibrated = CalibratedClassifierCV(estimator=xgb_base, method='sigmoid', cv=5)
-    xgb_calibrated.fit(X_train, y_train)
+    xgb_calibrated.fit(X_train, y_train, sample_weight=sample_weights)
     
     print("Training Random Forest...")
     rf = RandomForestClassifier(random_state=42)

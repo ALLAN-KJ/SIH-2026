@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import type { AnalysisResult } from '../types';
+import type { AnalysisResult } from '../../types';
 import { Card, CardHeader, Overline, SevBadge, Mono, sev } from './ui';
 
 interface Props {

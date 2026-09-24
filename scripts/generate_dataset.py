@@ -73,14 +73,16 @@ def generate_synthetic_dataset(num_rows=5000):
         score += random.randint(-5, 5)
         score = max(0, min(100, score)) # bound between 0 and 100
         
-        if score >= 75:
+        if score >= 80:
             label = "Critical"
-        elif score >= 50:
+        elif score >= 60:
             label = "Weak"
-        elif score >= 25:
+        elif score >= 40:
             label = "Moderate"
-        else:
+        elif score >= 20:
             label = "Strong"
+        else:
+            label = "Low"
             
         # Empty issues if none
         flagged = "; ".join(issues) if issues else "None"
@@ -103,8 +105,8 @@ def generate_synthetic_dataset(num_rows=5000):
         })
 
     df = pd.DataFrame(data)
-    df.to_csv("ipsec_synthetic_dataset.csv", index=False)
-    print(f"Generated {num_rows} rows in ipsec_synthetic_dataset.csv")
+    df.to_csv("backend/data/ipsec_synthetic_dataset.csv", index=False)
+    print(f"Generated {num_rows} rows in backend/data/ipsec_synthetic_dataset.csv")
 
 if __name__ == "__main__":
     generate_synthetic_dataset()

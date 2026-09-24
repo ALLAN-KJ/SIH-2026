@@ -1,4 +1,5 @@
 import type { AuditLogResponse } from '../../types';
+import { Warning, CaretRight, CheckCircle } from '@phosphor-icons/react';
 import { Card, CardHeader, Overline, Mono } from '../ui';
 
 export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
@@ -15,11 +16,7 @@ export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
           alignItems: 'flex-start',
           gap: '12px',
         }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-crit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-            <line x1="12" y1="9" x2="12" y2="13" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
-          </svg>
+          <Warning size={20} weight="bold" color="var(--color-crit)" style={{ flexShrink: 0, marginTop: '2px' }} />
           <div>
             <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--color-crit)' }}>
               TAMPERING DETECTED
@@ -34,7 +31,11 @@ export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
           fontSize: 'var(--text-sm)',
           fontWeight: 500,
           color: 'var(--color-text-1)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
         }}>
+          <CheckCircle size={18} weight="fill" color="var(--color-strong)" />
           Tamper-evident, cryptographically verified
         </span>
       )}
@@ -53,9 +54,7 @@ export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
           gap: '6px',
           userSelect: 'none' as const,
         }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="9 6 15 12 9 18" />
-          </svg>
+          <CaretRight size={14} weight="bold" />
           Details
         </summary>
         <div style={{

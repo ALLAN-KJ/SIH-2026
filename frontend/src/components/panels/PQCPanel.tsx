@@ -1,4 +1,5 @@
 import type { PQCResponse } from '../../types';
+import { CaretRight } from '@phosphor-icons/react';
 import { Card, CardHeader, SevBadge, sev } from '../ui';
 
 export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
@@ -54,9 +55,7 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
             gap: '6px',
             userSelect: 'none' as const,
           }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 6 15 12 9 18" />
-            </svg>
+            <CaretRight size={14} weight="bold" />
             Details
           </summary>
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
