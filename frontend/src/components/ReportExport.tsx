@@ -100,13 +100,17 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
       )}
 
       {/* Hidden Render Areas for PDF Generation */}
-      <div style={{ position: 'absolute', top: '-9999px', left: '-9999px', width: '210mm', opacity: 0, pointerEvents: 'none' }}>
+      <div style={{ position: 'fixed', top: '0', left: '-9999px', width: '210mm', opacity: 0, pointerEvents: 'none', zIndex: -9999 }}>
         
         {/* Executive Report */}
         <div ref={execRef} style={{ display: 'none', padding: '40px', backgroundColor: '#000', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
-          <div style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '40px' }}>
+          <div style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '20px' }}>
             <h1 style={{ fontSize: '24px', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>IPsec Sentinel - Executive Summary</h1>
             <div style={{ color: '#888', fontSize: '12px' }}>Generated securely via local audit node.</div>
+          </div>
+          
+          <div style={{ backgroundColor: 'rgba(251,146,60,0.1)', border: '1px solid #FB923C', color: '#FB923C', padding: '12px', fontSize: '12px', marginBottom: '40px', borderRadius: '4px' }}>
+            <strong>Notice:</strong> AI-generated analysis — recommended configurations should be reviewed by a qualified network/security engineer before deployment.
           </div>
           
           <div style={{ display: 'flex', gap: '40px', marginBottom: '40px' }}>
@@ -203,6 +207,9 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
 
           <div>
              <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Raw Config Recommendations</div>
+             <div style={{ backgroundColor: 'rgba(251,146,60,0.1)', border: '1px solid #FB923C', color: '#FB923C', padding: '12px', fontSize: '12px', marginBottom: '16px', borderRadius: '4px' }}>
+               <strong>Notice:</strong> AI-generated analysis — recommended configurations should be reviewed by a qualified network/security engineer before deployment.
+             </div>
              <pre style={{ margin: 0, padding: '16px', backgroundColor: '#111', border: '1px solid #222', fontSize: '12px', color: '#ccc', overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
                {results.remediation.config_diff || 'No specific config remediation provided.'}
              </pre>

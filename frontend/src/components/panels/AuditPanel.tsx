@@ -1,6 +1,6 @@
 import type { AuditLogResponse } from '../../types';
 import { Warning, CaretRight, CheckCircle } from '@phosphor-icons/react';
-import { Card, CardHeader, Overline, Mono } from '../ui';
+import { Card, CardHeader, Overline, Mono, HelperNote } from '../ui';
 
 export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
   <Card id="panel-audit" className="panel-secondary">
@@ -27,17 +27,20 @@ export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
           </div>
         </div>
       ) : (
-        <span style={{
+        <div style={{
           fontSize: 'var(--text-sm)',
           fontWeight: 500,
           color: 'var(--color-text-1)',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           gap: '8px',
         }}>
           <CheckCircle size={18} weight="fill" color="var(--color-strong)" />
-          Tamper-evident, cryptographically verified
-        </span>
+          <div>
+            <div>Tamper-evident, cryptographically verified</div>
+            <HelperNote>blockchain-backed proof of this exact report</HelperNote>
+          </div>
+        </div>
       )}
 
       <details style={{ marginTop: '12px' }}>

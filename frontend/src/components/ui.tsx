@@ -137,3 +137,9 @@ export const Mono = ({ children, style: extraStyle }: { children: React.ReactNod
     {children}
   </span>
 );
+
+export const HelperNote = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginTop: '4px' }}>
+    ({children})
+  </div>
+);

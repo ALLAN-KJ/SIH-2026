@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import type { AssessResponse } from '../../types';
 import { CaretRight, WarningOctagon, CheckCircle } from '@phosphor-icons/react';
-import { Card, CardHeader, Overline, SevBadge, Mono, sev, prefersReducedMotion } from '../ui';
+import { Card, CardHeader, Overline, SevBadge, Mono, sev, prefersReducedMotion, HelperNote } from '../ui';
 import { ThreatMatrix } from './ThreatMatrix';
 
 export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }) => {
@@ -55,9 +55,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                 AI Confidence: {risk.risk_confidence}%
               </span>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
-                (how sure the model is about this specific prediction)
-              </span>
+              <HelperNote>how sure the model is about this specific prediction</HelperNote>
             </div>
           )}
         </div>
@@ -148,9 +146,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
                   <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                     AI Confidence: {risk.traffic_confidence}%
                   </div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
-                    (model certainty of traffic type)
-                  </div>
+                  <HelperNote>model certainty of traffic type</HelperNote>
                 </div>
               </div>
             )}
