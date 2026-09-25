@@ -32,7 +32,7 @@ export interface AnalysisMetadata {
  *  All existing honesty disclaimers preserved from prior passes:
  *  - PQC: "Estimated" with IANA draft caveat
  *  - Audit: "Tamper-evident" not "tamper-proof"
- *  - LLM: "AI-generated starting point" disclaimer
+ *  - Configuration compliance: "generated starting point" disclaimer
  * ═══════════════════════════════════════════════════════════════
  */
 
@@ -44,7 +44,7 @@ const STEPS = [
   'Parsing IKE negotiation…',
   'Scoring risk factors…',
   'Checking quantum readiness…',
-  'Generating remediation…',
+  'Generating configuration compliance report…',
   'Logging audit trail…',
 ];
 

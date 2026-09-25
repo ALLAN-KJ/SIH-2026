@@ -407,7 +407,7 @@ export function Dashboard() {
                 lineHeight: 1.6,
                 maxWidth: '480px',
               }}>
-                Upload a packet capture or probe a live target. Get a risk score, PQC readiness report, AI-generated remediation, and a tamper-evident audit record.
+                Upload a packet capture or probe a live target. Get a Security Score, cryptographic strength evaluation, configuration compliance recommendations, and a tamper-evident audit record.
               </p>
             </div>
 

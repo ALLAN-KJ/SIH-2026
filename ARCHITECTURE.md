@@ -7,7 +7,7 @@ IPsec VPN Protocol Analyzer is an AI-driven, PQC-aware VPN configuration auditor
 
 1. **Frontend (React / Vite)**
    - Dashboard-centric UI using Framer Motion and custom CSS properties.
-   - Panels: Upload/Probe, Risk Assessment, PQC Readiness, AI Copilot, Audit Log.
+   - Panels: Upload/Probe, Security Assessment, Cryptographic Strength, Configuration Compliance, Audit Log.
    - Dual-layout PDF report generator (Executive & Technical).
 
 2. **Backend (FastAPI)**

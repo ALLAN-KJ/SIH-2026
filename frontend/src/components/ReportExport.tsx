@@ -178,7 +178,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
         {/* Executive Report */}
         <div ref={execRef} style={{ display: 'none', padding: '40px', backgroundColor: '#000', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
           <div style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '20px' }}>
-            <h1 style={{ fontSize: '24px', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>IPsec VPN Protocol Analyzer - Executive Summary</h1>
+            <h1 style={{ fontSize: '24px', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>IPsec VPN Protocol Analyzer - Executive Report</h1>
             <div style={{ color: '#888', fontSize: '12px' }}>Generated securely via local audit node.</div>
           </div>
           
@@ -231,7 +231,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
         {/* Technical Report */}
         <div ref={techRef} style={{ display: 'none', padding: '40px', backgroundColor: '#000', color: '#fff', fontFamily: 'Inter, sans-serif' }}>
           <div style={{ borderBottom: '1px solid #333', paddingBottom: '20px', marginBottom: '30px' }}>
-            <h1 style={{ fontSize: '24px', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>IPsec VPN Protocol Analyzer - Technical Audit Report</h1>
+            <h1 style={{ fontSize: '24px', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>IPsec VPN Protocol Analyzer - Technical Report</h1>
             <div style={{ color: '#888', fontSize: '12px', wordBreak: 'break-all' }}>Hash: {results.audit.report_hash}</div>
           </div>
           

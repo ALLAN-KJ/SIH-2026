@@ -10,7 +10,7 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
   const isFallback = remediation.explanation.includes("Remediation unavailable");
   return (
   <Card id="panel-llm" className="panel-secondary" style={isFallback ? { borderColor: 'var(--color-weak-border)' } : {}}>
-    <CardHeader title="Remediation Copilot" subtitle={isFallback ? "Fallback Configuration Loaded" : "Live LLM Generation"} />
+    <CardHeader title="Configuration Compliance" subtitle={isFallback ? "Fallback Configuration Loaded" : "Security Assessment Report"} />
     {/* Persistent disclaimer — never removed */}
     <div style={{
       padding: '8px 24px',
@@ -88,7 +88,7 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
 
         <div style={{ marginTop: '16px' }}>
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '16px' }}>
-            LLM-generated · NIST SP 800-77 aligned
+            Intelligent framework · NIST SP 800-77 aligned
           </p>
 
           <Overline>NIST Citation</Overline>

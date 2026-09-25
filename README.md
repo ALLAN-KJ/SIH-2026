@@ -18,7 +18,7 @@ IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN
 *   **AH Header Parsing:** Natively extracts SPI, Sequence Number, and ICV Length from Authentication Header packets via Scapy.
 *   **Tunnel/Transport & IPv4/IPv6 Detection:** Automatically parses and differentiates between IPsec Tunnel and Transport modes, as well as IPv4/IPv6 traffic.
 *   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP is unavailable.
-*   **LLM Remediation Copilot:** Auto-generates vendor-specific (Cisco IOS) CLI configuration fixes to remediate identified vulnerabilities using robust regex-based extraction.
+*   **Configuration compliance:** Auto-generates vendor-specific (Cisco IOS) CLI configuration fixes to remediate identified vulnerabilities using robust regex-based extraction.
 *   **Tamper-Evident Audit Trail:** Merkle-tree based cryptographic logging for compliance and forensic integrity.
 
 ## Architecture

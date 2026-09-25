@@ -47,7 +47,7 @@ export const SihDemoModal = ({
 
   const steps = [
     {
-      title: "Guided Tour: IPsec Sentinel",
+      title: "Guided Tour: IPsec VPN Protocol Analyzer",
       badge: "INTRODUCTION",
       content: (
         <div style={{ color: 'var(--color-text-2)', lineHeight: 1.6 }}>
@@ -134,12 +134,12 @@ export const SihDemoModal = ({
       canProceed: true,
     },
     {
-      title: "AI Cyber Copilot Remediation",
-      badge: "STEP 4: LLM COPILOT",
+      title: "Configuration Compliance",
+      badge: "STEP 4: CONFIGURATION COMPLIANCE",
       content: results ? (
         <div style={{ color: 'var(--color-text-2)', lineHeight: 1.6 }}>
           <p style={{ marginBottom: '16px' }}>
-            The LLM generated a hardened, NIST SP 800-77 compliant replacement.
+            The intelligent framework generated a hardened, NIST SP 800-77 compliant replacement.
           </p>
           <div style={{ padding: '12px', border: '1px solid var(--color-border-dim)', marginBottom: '16px', fontSize: 'var(--text-sm)', color: 'var(--color-text-1)' }}>
             {results.remediation.explanation.substring(0, 150)}...
