@@ -11,6 +11,13 @@ import { AuditPanel } from './components/panels/AuditPanel';
 import { SihDemoModal } from './components/SihDemoModal';
 import { ReportExport } from './components/ReportExport';
 import { X, Play, FileArrowUp, FileText } from '@phosphor-icons/react';
+
+export interface AnalysisMetadata {
+  sourceName: string;
+  sourceType: 'file' | 'probe' | 'sample';
+  timestamp: string;
+}
+
 /*
  * ═══════════════════════════════════════════════════════════════
  *  IPsec Sentinel — Audit Console
@@ -386,6 +393,7 @@ export default function App() {
   );
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [metadata, setMetadata] = useState<AnalysisMetadata | null>(null);
   const [lastSuccessfulRemediation, setLastSuccessfulRemediation] = useState<RemediateResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -436,6 +444,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: file.name,
+      sourceType: 'file',
+      timestamp: new Date().toISOString()
+    });
     try {
       const res = await api.analyzePCAP(file);
       setResults(res);
@@ -454,6 +467,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: filename,
+      sourceType: 'sample',
+      timestamp: new Date().toISOString()
+    });
     try {
       const resp = await fetch(`/${filename}`);
       if (!resp.ok) throw new Error('Failed to load sample PCAP');
@@ -475,6 +493,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: `Live probe: ${ip}`,
+      sourceType: 'probe',
+      timestamp: new Date().toISOString()
+    });
     try {
       const res = await api.probeTarget(ip, auth, true);
       setResults(res);
@@ -561,9 +584,9 @@ export default function App() {
             <Play size={14} weight="bold" />
             Guided Demo
           </button>
-          {results && (
+          {results && metadata && (
             <>
-              <ReportExport results={results} />
+              <ReportExport results={results} metadata={metadata} />
               <button
                 onClick={() => { setResults(null); setError(null); }}
                 className="transition-default"

@@ -2,13 +2,15 @@ import React, { useRef, useState } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { AnalysisResult } from '../types';
+import type { AnalysisMetadata } from '../App';
 import { sev } from './ui';
 
 interface Props {
   results: AnalysisResult;
+  metadata: AnalysisMetadata;
 }
 
-export const ReportExport: React.FC<Props> = ({ results }) => {
+export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
   const [isExporting, setIsExporting] = useState(false);
   const [showOptions, setShowOptions] = useState(false);
   const execRef = useRef<HTMLDivElement>(null);
@@ -42,6 +44,77 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
   };
 
   const s = sev(results.risk.risk_label);
+  
+  const renderConfigTable = () => (
+    <div style={{ marginBottom: '30px' }}>
+      <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Detected vs Recommended Configuration</div>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', color: '#ccc', textAlign: 'left' }}>
+        <thead>
+          <tr style={{ borderBottom: '1px solid #333' }}>
+            <th style={{ padding: '8px 4px', color: '#888', fontWeight: 500 }}>Parameter</th>
+            <th style={{ padding: '8px 4px', color: '#888', fontWeight: 500 }}>Current Value</th>
+            <th style={{ padding: '8px 4px', color: '#888', fontWeight: 500 }}>Recommended Standard</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>IKE Version</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.ike_version}</td>
+            <td style={{ padding: '8px 4px', color: '#22c55e' }}>IKEv2</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>Mode</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.operation_mode}</td>
+            <td style={{ padding: '8px 4px' }}>Tunnel</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>Encryption</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.encryption_algorithm}</td>
+            <td style={{ padding: '8px 4px', color: '#22c55e' }}>AES-256-GCM</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>Hash Algorithm</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.hash_algorithm}</td>
+            <td style={{ padding: '8px 4px', color: '#22c55e' }}>SHA384 or SHA512</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>DH Group</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.dh_group}</td>
+            <td style={{ padding: '8px 4px', color: '#22c55e' }}>Group 19, 20, 21 or 31</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>PFS Status</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.pfs_enabled ? 'Enabled' : 'Disabled'}</td>
+            <td style={{ padding: '8px 4px', color: '#22c55e' }}>Enabled</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>SA Lifetime</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.sa_lifetime_seconds}s</td>
+            <td style={{ padding: '8px 4px' }}>{"<= 86400s (IKE) / <= 28800s (IPsec)"}</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>IP Version</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.ip_version}</td>
+            <td style={{ padding: '8px 4px' }}>Any</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderMetadata = () => (
+    <div style={{ marginBottom: '30px', backgroundColor: '#111', padding: '16px', border: '1px solid #222', fontSize: '12px' }}>
+      <div style={{ color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>Source Metadata</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', color: '#ccc' }}>
+        <div><strong>Source:</strong> {metadata.sourceName}</div>
+        <div><strong>Type:</strong> {metadata.sourceType === 'probe' ? 'Live Active Probe' : 'PCAP Capture'}</div>
+        <div><strong>Time:</strong> {new Date(metadata.timestamp).toLocaleString()}</div>
+        {results.ipsec_request.esp_features && (
+          <div><strong>Packets Analyzed:</strong> {results.ipsec_request.esp_features.esp_packet_count}</div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div style={{ position: 'relative' }}>
@@ -66,9 +139,9 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
       {showOptions && (
         <div style={{
           position: 'absolute',
-          bottom: '100%',
+          top: '100%',
           right: 0,
-          marginBottom: '8px',
+          marginTop: '8px',
           backgroundColor: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
           padding: '8px',
@@ -113,6 +186,8 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
             <strong>Notice:</strong> AI-generated analysis — recommended configurations should be reviewed by a qualified network/security engineer before deployment.
           </div>
           
+          {renderMetadata()}
+
           <div style={{ display: 'flex', gap: '40px', marginBottom: '40px' }}>
             <div style={{ flex: 1, backgroundColor: '#111', padding: '24px', border: '1px solid #222' }}>
               <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Risk Assessment</div>
@@ -146,6 +221,8 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
             )}
           </div>
           
+          {renderConfigTable()}
+          
           <div style={{ borderTop: '1px solid #333', paddingTop: '20px', color: '#666', fontSize: '10px' }}>
             Report Hash: {results.audit.report_hash}
           </div>
@@ -158,6 +235,8 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
             <div style={{ color: '#888', fontSize: '12px', wordBreak: 'break-all' }}>Hash: {results.audit.report_hash}</div>
           </div>
           
+          {renderMetadata()}
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
              <div style={{ backgroundColor: '#111', padding: '16px', border: '1px solid #222' }}>
                 <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px' }}>Risk Verdict</div>
@@ -178,8 +257,10 @@ export const ReportExport: React.FC<Props> = ({ results }) => {
              </div>
           </div>
           
+          {renderConfigTable()}
+          
           <div style={{ marginBottom: '30px' }}>
-            <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Extracted Parameters</div>
+            <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Raw Extracted Parameters</div>
             <pre style={{ margin: 0, padding: '16px', backgroundColor: '#111', border: '1px solid #222', fontSize: '12px', color: '#ccc', overflow: 'hidden' }}>
               {JSON.stringify(results.ipsec_request, null, 2)}
             </pre>

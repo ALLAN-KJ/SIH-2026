@@ -72,7 +72,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
         {/* IPsec Extracted Parameters */}
         {ipsec && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>Extracted Cleartext Metadata (Exposure Report)</Overline>
+            <Overline>Connection Details (Metadata Exposure)</Overline>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '8px' }}>
               The following connection parameters were exposed in cleartext during IKE negotiation:
             </p>
@@ -122,7 +122,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
         {/* ESP Traffic Classification */}
         {risk.esp_anomaly_status && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>ESP Traffic Classification</Overline>
+            <Overline>Traffic Analysis</Overline>
             
             {/* Traffic Type Prediction */}
             {risk.traffic_type && (
@@ -146,7 +146,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
                   <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                     AI Confidence: {risk.traffic_confidence}%
                   </div>
-                  <HelperNote>model certainty of traffic type</HelperNote>
+                  <HelperNote>how sure the AI is about the traffic type</HelperNote>
                 </div>
               </div>
             )}
@@ -204,7 +204,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
 
           <div style={{ marginTop: '16px' }}>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '16px' }}>
-              XGBoost classifier · SHAP explainability
+              AI Model Explainability · Top Factors
             </p>
             {/* SHAP chart */}
             <div style={{ marginBottom: '16px' }}>

@@ -18,6 +18,10 @@ def evaluate_pqc_readiness(req: PQCRequest) -> PQCResponse:
     score = 100
     details = {}
     
+    if req.encryption_algorithm == "N/A":
+        return PQCResponse(pqc_score=0, pqc_status="N/A (No VPN)", details={"general": {"status": "N/A", "reason": "No IPsec VPN traffic detected."}})
+
+    
     # Evaluate Encryption Algorithm (Grover's algorithm halves effective key size)
     # 256-bit keys are considered quantum-safe for symmetric encryption.
     if req.encryption_algorithm == "Unknown" or req.encryption_algorithm.isdigit():

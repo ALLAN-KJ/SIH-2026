@@ -37,6 +37,11 @@ export const SEV_MAP: Record<string, Sev> = {
     bg:     'var(--color-strong-muted)',
     border: 'var(--color-strong-border)',
   },
+  'Normal (No VPN)': {
+    fg:     'var(--color-text-2)',
+    bg:     'var(--color-surface)',
+    border: 'var(--color-border)',
+  },
 };
 
 export const DEFAULT_SEV: Sev = {

@@ -80,9 +80,9 @@ def generate_synthetic_dataset(num_rows=5000):
         elif score >= 40:
             label = "Moderate"
         elif score >= 20:
-            label = "Strong"
-        else:
             label = "Low"
+        else:
+            label = "Strong"
             
         # Empty issues if none
         flagged = "; ".join(issues) if issues else "None"
