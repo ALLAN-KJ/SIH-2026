@@ -398,8 +398,7 @@ export function Dashboard() {
                 lineHeight: 1.2,
                 marginBottom: '10px',
               }}>
-                Analyse IPsec VPN security.<br />
-                <span style={{ color: 'var(--color-accent)' }}>Post-quantum ready.</span>
+                Analyse IPsec VPN security.
               </h1>
               <p style={{
                 fontSize: 'var(--text-sm)',
