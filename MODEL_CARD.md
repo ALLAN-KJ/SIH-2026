@@ -1,4 +1,4 @@
-# Model Card: IPsec Sentinel Models
+# Model Card: IPsec VPN Protocol Analyzer Models
 
 ## 1. XGBoost Risk Classifier
 - **Model Type**: XGBoost Classifier + CalibratedClassifierCV

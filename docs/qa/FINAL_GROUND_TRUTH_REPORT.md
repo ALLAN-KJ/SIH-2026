@@ -1,9 +1,9 @@
-# IPsec Sentinel: Final Ground-Truth Verification Report
+# IPsec VPN Protocol Analyzer: Final Ground-Truth Verification Report
 *Date: September 25, 2026*
 *Audit Performed via Live Execution against Local & Vercel/Render Environments*
 
 ## SECTION 1 — WHAT THE PROJECT ACTUALLY IS
-IPsec Sentinel is a functional, end-to-end API backend (FastAPI/Python) and web dashboard (React) that analyzes IPsec PCAP files and live IKE gateways. 
+IPsec VPN Protocol Analyzer is a functional, end-to-end API backend (FastAPI/Python) and web dashboard (React) that analyzes IPsec PCAP files and live IKE gateways. 
 - **Input Modes**: It ingests `.pcap` files via `/upload_pcap` (parsed dynamically using Scapy) or executes real SA_INIT packets against live IPs via `/probe/active`. 
 - **Processing Stage**: It extracts cryptographic parameters (Encryption, Hash, DH, PFS) and ESP flow statistics. These parameters are passed into an XGBoost model calibrated via Platt Scaling to generate a 0-100 continuous Risk Score. Simultaneously, ESP features are passed to a Random Forest classifier to identify traffic types (VoIP, Video, Web, etc.). A heuristic rule engine checks for PQC readiness based on IANA draft identifiers. An LLM (Groq Qwen 2.5) evaluates SHAP factors to generate Cisco IOS remediation snippets. 
 - **Output**: Returns JSON containing risk scores, labels, PQC status, traffic type, and remediation steps. All results are hashed and immutably appended to a local SQLite-backed Merkle tree for a tamper-evident audit trail.
@@ -42,7 +42,7 @@ IPsec Sentinel is a functional, end-to-end API backend (FastAPI/Python) and web 
 13. **CORS & Secrets**: Checked via code audit and live headers; `CORS_ORIGIN` logic defaults to strict localhost if wildcard is passed.
 14. **Live Deployment**: 
    - Vercel URL responds with `HTTP 200`.
-   - Render API (`/health`) responds with `HTTP 200 - {"status":"ok","service":"ipsec-sentinel-api"}`.
+   - Render API (`/health`) responds with `HTTP 200 - {"status":"ok","service":"ipsec-vpn-protocol-analyzer-api"}`.
    - End-to-end API upload on Render returned `HTTP 200`.
 15. **Dataset Integrity**: Exactly 500 synthetic PCAPs exist matching `labels.csv`.
 16. **Baseline Traffic ("Normal communication")**: Implemented and confirmed working. PCAPs containing only standard traffic (e.g., HTTP) correctly bypass the IPsec model and are labeled explicitly as "Normal Communication - No VPN Detected" with a 0.0 risk score.

@@ -5,7 +5,7 @@ import { prefersReducedMotion } from './components/ui';
 
 /*
  * ═══════════════════════════════════════════════════════════════
- *  IPsec Sentinel — Dashboard Landing
+ *  IPsec VPN Protocol Analyzer — Dashboard Landing
  *
  *  PURPOSE: Lightweight pre-analysis home screen. Gives users
  *  context and three clearly-labelled quick-launch buttons
@@ -350,7 +350,7 @@ export function Dashboard() {
             color: 'var(--color-text-1)',
             letterSpacing: '-0.01em',
           }}>
-            IPsec Sentinel
+            IPsec VPN Protocol Analyzer
           </span>
 
           <button
@@ -398,8 +398,7 @@ export function Dashboard() {
                 lineHeight: 1.2,
                 marginBottom: '10px',
               }}>
-                Analyse IPsec VPN security.<br />
-                <span style={{ color: 'var(--color-accent)' }}>Post-quantum ready.</span>
+                Analyse IPsec VPN security.
               </h1>
               <p style={{
                 fontSize: 'var(--text-sm)',
@@ -407,7 +406,7 @@ export function Dashboard() {
                 lineHeight: 1.6,
                 maxWidth: '480px',
               }}>
-                Upload a packet capture or probe a live target. Get a risk score, PQC readiness report, AI-generated remediation, and a tamper-evident audit record.
+                Upload a packet capture or probe a live target. Get a Security Score, cryptographic strength evaluation, configuration compliance recommendations, and a tamper-evident audit record.
               </p>
             </div>
 

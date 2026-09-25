@@ -1,9 +1,9 @@
-# IPsec Sentinel — Deployment Guide
+# IPsec VPN Protocol Analyzer — Deployment Guide
 
-This document outlines the step-by-step instructions for deploying IPsec Sentinel to public cloud infrastructure for production or public demo usage.
+This document outlines the step-by-step instructions for deploying IPsec VPN Protocol Analyzer to public cloud infrastructure for production or public demo usage.
 
 ## Architecture Overview
-IPsec Sentinel consists of two decoupled services:
+IPsec VPN Protocol Analyzer consists of two decoupled services:
 1. **Frontend:** React + Vite SPA (Static site hosting)
 2. **Backend:** FastAPI + Python (Python runtime hosting with persistent storage)
 

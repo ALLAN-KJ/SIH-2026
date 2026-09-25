@@ -1,6 +1,6 @@
-# IPsec Sentinel VPN Testbed
+# IPsec VPN Protocol Analyzer VPN Testbed
 
-This document details the synthetic generation of the IPsec VPN configurations and traffic datasets used to test and train the IPsec Sentinel project.
+This document details the synthetic generation of the IPsec VPN configurations and traffic datasets used to test and train the IPsec VPN Protocol Analyzer project.
 
 ## Overview
 As part of the requirement to evaluate IPsec behavior across multiple modes, encryption algorithms, Diffie-Hellman groups, and traffic profiles, we developed a deterministic generation pipeline.

@@ -1,14 +1,14 @@
-# IPsec Sentinel: Project Purpose & Evaluation Guide
+# IPsec VPN Protocol Analyzer: Project Purpose & Evaluation Guide
 
-This document serves as an evaluation guide for Smart India Hackathon (SIH) judges to understand the purpose, architecture, and current state of the IPsec Sentinel project.
+This document serves as an evaluation guide for Smart India Hackathon (SIH) judges to understand the purpose, architecture, and current state of the IPsec VPN Protocol Analyzer project.
 
 ## The Problem
 As quantum computing matures, classical cryptography (like RSA and current Diffie-Hellman groups) used in VPNs is at risk of "harvest now, decrypt later" attacks. Additionally, legacy VPN deployments often suffer from critical misconfigurations (e.g., using DES, MD5, or lacking Perfect Forward Secrecy) that lead to immediate compromise. 
 
-**IPsec Sentinel** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
+**IPsec VPN Protocol Analyzer** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
 1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations. Includes an **Interactive Threat Matrix** to categorize impact zones and an **AI Confidence Score** (calibrated via Platt Scaling) to show true prediction probability.
 2. **Estimated Post-Quantum Readiness Assessment**: Estimates if the negotiated Key Exchange Mechanisms (KEMs) withstand Shor's algorithm, based on proposed IANA KEM identifiers (not yet finalized).
-3. **LLM Remediation Copilot**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq (using Qwen/Llama3 models).
+3. **Configuration compliance**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq (using Qwen/Llama3 models).
 4. **Tamper-Evident Audit Trail**: Persists logs using a local SQLite Merkle tree structure to ensure historical analysis records are tamper-evident.
 5. **Active Live Probe** (`/api/probe/active`): Crafts and sends a real IKEv2 SA_INIT packet (with downgrade attack simulation) to a target gateway (UDP 500), captures the response, and feeds it through the identical risk/PQC/remediation/audit pipeline as the passive PCAP flow. Requires explicit authorization confirmation. Default safety restriction: only RFC1918 private IPs and loopback are probed without an explicit override flag.
 6. **Reporting & Exposure Detection**: Provides **Executive and Technical PDF report generation**, flags **Metadata exposure** risks in cleartext IPsec negotiations, and extracts deep parameters including **AH (Authentication Header)** fields (`SPI`, `Sequence Number`, `ICV Length`).
@@ -19,12 +19,12 @@ The pipeline is fully integrated and end-to-end. There are NO mocked paths for t
 1. **PCAP Parsing (`ike_parser.py`)**: Parses standard Scapy `ikev2`, `ISAKMP`, and `AH` payloads. Extracts transforms (Encryption, Hash, DH Group), cleartext parameters, and Authentication Header fields. *If no valid IKE negotiation is found, the system halts with a 400 Bad Request.*
 2. **Feature Preprocessing & XGBoost Classification (`risk_engine.py`)**: Transforms extracted data using `preprocessor.joblib`. Evaluates risk probability using `xgb_calibrated.joblib` and evaluates SHAP explainability using the base `xgb_model.joblib`. Uses `shap` to output exactly *why* a decision was made.
 3. **PQC Scoring (`pqc_scorer.py`)**: Uses an explicit mapping of known DH groups to quantum-vulnerable or quantum-safe categories.
-4. **Remediation (`llm_copilot.py`)**: Given the SHAP values and flagged issues, calls the Groq API to generate a `cisco_ios.conf` diff to fix the identified vulnerabilities.
+4. **Configuration compliance (`llm_copilot.py`)**: Given the SHAP values and flagged issues, calls the Groq API to generate a `cisco_ios.conf` diff to fix the identified vulnerabilities.
 5. **Auditing (`audit_trail.py`)**: Appends the report hash to a SQLite-backed Merkle tree, returning the unforgeable root hash.
 
 ## Active Probe Feature
 
-IPsec Sentinel includes an **Active Live Probe** mode (endpoint: `POST /probe/active`) that sends a real IKEv2 SA_INIT packet to a target gateway and parses the live response through the same pipeline as a PCAP upload.
+IPsec VPN Protocol Analyzer includes an **Active Live Probe** mode (endpoint: `POST /probe/active`) that sends a real IKEv2 SA_INIT packet to a target gateway and parses the live response through the same pipeline as a PCAP upload.
 
 ### Authorization Gate (Dual: Frontend + Backend)
 The probe **cannot fire** without all three of the following:
@@ -74,7 +74,7 @@ npm run build
 *(Requires `VITE_API_BASE_URL` at build time).*
 
 ## SIH PS-26160 Alignment Checklist
-*(Verified against the SIH 26160 NTRO IPsec Sentinel requirements)*
+*(Verified against the SIH 26160 NTRO IPsec VPN Protocol Analyzer requirements)*
 
 ### (a) VPN Testbed Generation
 - **Requirement:** Produce tunnels across Tunnel/Transport mode, AES-128/256/GCM/CBC+HMAC, multiple DH groups, PFS on/off, IPv4 AND IPv6. -> **Fully Covered** (100 permutations in /dataset/).

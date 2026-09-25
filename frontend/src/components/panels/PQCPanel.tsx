@@ -8,7 +8,7 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
   return (
     <Card id="panel-pqc" className="panel-secondary">
       <CardHeader
-        title="Estimated Post-Quantum Readiness"
+        title="Cryptographic Strength"
         subtitle="Based on proposed IANA KEM identifiers (not yet finalized)"
       />
       <div style={{ padding: '24px' }}>

@@ -31,7 +31,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
 
   return (
     <Card id="panel-risk" className="panel-risk">
-      <CardHeader title="Risk Assessment" />
+      <CardHeader title="Security Assessment" />
       <div style={{ padding: '24px' }}>
         {/* Verdict row */}
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
@@ -53,7 +53,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
           {risk.risk_confidence !== undefined && (
             <div style={{ marginLeft: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
-                AI Confidence: {risk.risk_confidence}%
+                AI Confidence Score: {risk.risk_confidence}%
               </span>
               <HelperNote>how sure the model is about this specific prediction</HelperNote>
             </div>
@@ -72,7 +72,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
         {/* IPsec Extracted Parameters */}
         {ipsec && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>Connection Details (Metadata Exposure)</Overline>
+            <Overline>Traffic Analysis (Metadata Exposure)</Overline>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '8px' }}>
               The following connection parameters were exposed in cleartext during IKE negotiation:
             </p>

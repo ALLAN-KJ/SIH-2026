@@ -1,8 +1,8 @@
-# IPsec Sentinel - 90-Second Demo Script
+# IPsec VPN Protocol Analyzer - 90-Second Demo Script
 
 ## 1. Problem Framing (0:00 - 0:10)
 **Action:** Show the dashboard landing page.
-**Voiceover:** "Traditional IPsec audits are manual and rigid. IPsec Sentinel automates this by combining a machine learning risk engine with deep packet inspection to evaluate VPN security in real-time."
+**Voiceover:** "Traditional IPsec audits are manual and rigid. IPsec VPN Protocol Analyzer automates this by combining a machine learning risk engine with deep packet inspection to evaluate VPN security in real-time."
 
 ## 2. Upload & Sample Selection (0:10 - 0:20)
 **Action:** Click the "Run Demo Scenarios" or upload the first sample.
@@ -31,4 +31,4 @@
 
 ## 7. Close (1:20 - 1:30)
 **Action:** Return to top of dashboard.
-**Voiceover:** "IPsec Sentinel: Delivering AI-driven, tamper-evident security assessments for the next generation of cryptographic protocols."
+**Voiceover:** "IPsec VPN Protocol Analyzer: Delivering AI-driven, tamper-evident security assessments for the next generation of cryptographic protocols."

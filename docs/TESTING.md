@@ -1,4 +1,4 @@
-# IPsec Sentinel Testing & Validation
+# IPsec VPN Protocol Analyzer Testing & Validation
 
 ## Generalization Testing
 We executed the pipeline against a diverse set of PCAPs to ensure robustness against non-standard or edge-case IKE traffic.
@@ -53,7 +53,7 @@ Failing to follow this rule will poison the live demo database and cause false T
 
 ## Live Active Probe Testing with Docker
 
-This guide explains how to spin up a local strongSwan VPN target to test the IPsec Sentinel Active Probe feature (/api/probe/active). 
+This guide explains how to spin up a local strongSwan VPN target to test the IPsec VPN Protocol Analyzer Active Probe feature (/api/probe/active). 
 
 ### Prerequisites
 - **Docker Desktop** installed and running on your host machine.
@@ -72,22 +72,7 @@ The Active Probe feature allows you to send synthetic IKEv2 handshakes to a live
 ### Testing Locally
 If you are running the backend locally (`localhost:8000`), you can simply use the IP address of your local strongSwan Docker container (e.g., `10.5.0.10`).
 
-### Testing Against the Deployed Backend (Render/Vercel)
-If you are using the public deployed backend, it cannot reach your local container. You must expose your local strongSwan container to the internet using a UDP-capable tunnel.
 
-> [!WARNING]
-> Standard tunneling tools like **Ngrok (free tier)** and **Cloudflare Tunnels** do NOT support UDP traffic. Because IPsec (IKEv2) uses UDP port 500, you must use a UDP-compatible tool.
-
-#### Option 1: Playit.gg (Recommended for quick testing)
-[Playit.gg](https://playit.gg/) is a free tunneling service that supports UDP without requiring port forwarding.
-1. Download and run the Playit.gg agent.
-2. Follow the prompt to link the agent to your account.
-3. In the Playit dashboard, create a Custom UDP Tunnel pointing to your local strongSwan container (e.g., `127.0.0.1:500`).
-4. Playit assigns a public address. (For this project's live SIH demo, use your persistent tunnel: **`della-seamless.tun.ply.gg:35709`**).
-5. In the Active Probe UI, enter this address, and check **Override RFC1918 Restriction**.
-
-#### Option 2: Free-Tier Cloud VM
-Spin up a small, free-tier cloud VM (e.g., AWS EC2 `t2.micro` or GCP `e2-micro`), install Docker, and run the `tests/strongswan/docker-compose.weak.yml` stack directly on the VM. You can then probe the VM's public IP address.
 
 ### Instructions
 
@@ -99,7 +84,7 @@ docker compose -f tests\strongswan\docker-compose.weak.yml up -d
 *Wait a few seconds for the container to initialize. It will bind to your local UDP port 500.*
 
 #### Step 2: Probe the Weak Target
-1. Open the IPsec Sentinel Frontend Dashboard.
+1. Open the IPsec VPN Protocol Analyzer Frontend Dashboard.
 2. Enter the target IP: 127.0.0.1 (or your local network IP localhost).
 3. Click **Scan**.
 4. Observe the results. You should see a **Critical** rating based on the 3DES/MD5 configuration.
@@ -115,7 +100,7 @@ docker compose -f tests\strongswan\docker-compose.strong.yml up -d
 ``
 
 #### Step 4: Probe the Strong Target
-1. Go back to the IPsec Sentinel Dashboard.
+1. Go back to the IPsec VPN Protocol Analyzer Dashboard.
 2. Click **Scan** again on the same IP (127.0.0.1).
 3. Observe the results. You should now see a **Strong** rating.
 
@@ -126,5 +111,5 @@ docker compose -f tests\strongswan\docker-compose.strong.yml down
 ``
 
 ### Troubleshooting
-- **Cannot connect to target / Port closed**: Ensure Windows Defender Firewall is not blocking UDP port 500/4500. You may need to add an explicit allow rule for Docker or the IPsec Sentinel Python backend.
+- **Cannot connect to target / Port closed**: Ensure Windows Defender Firewall is not blocking UDP port 500/4500. You may need to add an explicit allow rule for Docker or the IPsec VPN Protocol Analyzer Python backend.
 - **Docker Daemon not found**: Make sure Docker Desktop is fully running (whale icon in system tray).
