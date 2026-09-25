@@ -3,7 +3,7 @@
 This directory contains a standalone microservice extracted from the main backend. 
 
 ### Why does this exist?
-The main IPsec Sentinel backend is deployed on Render's free tier. Render's free tier (Web Services) natively blocks all outbound UDP traffic. Because active IKEv2 probing requires sending raw UDP packets on port 500, the main backend cannot perform this action when deployed to the cloud.
+The main IPsec VPN Protocol Analyzer backend is deployed on Render's free tier. Render's free tier (Web Services) natively blocks all outbound UDP traffic. Because active IKEv2 probing requires sending raw UDP packets on port 500, the main backend cannot perform this action when deployed to the cloud.
 
 To resolve this without forcing a paid cloud tier upgrade, the active probe logic has been isolated into this standalone service. 
 

@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from scapy.all import IP, UDP, wrpcap
 import scapy.contrib.ikev2 as ikev2
 
-app = FastAPI(title="IPsec Sentinel - Standalone Probe Node")
+app = FastAPI(title="IPsec VPN Protocol Analyzer - Standalone Probe Node")
 
 RATE_LIMIT_DB = {}
 

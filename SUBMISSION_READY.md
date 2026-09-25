@@ -1,4 +1,4 @@
-# IPsec Sentinel Submission Checklist
+# IPsec VPN Protocol Analyzer Submission Checklist
 
 - [x] **Working software prototype** — Verified. Localhost React frontend connects to FastAPI backend smoothly.
 - [x] **AI classification engine** — Verified. XGBoost Risk Engine achieves 84% accuracy across 5 classes (Critical, Low, Moderate, Strong, Weak) based on 5,000 synthetic configurations. RandomForest ESP classifier achieves 100% accuracy on synthetic distributions.

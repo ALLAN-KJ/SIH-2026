@@ -20,7 +20,7 @@ export interface AnalysisMetadata {
 
 /*
  * ═══════════════════════════════════════════════════════════════
- *  IPsec Sentinel — Audit Console
+ *  IPsec VPN Protocol Analyzer — Audit Console
  *
  *  Design direction: See DESIGN.md
  *  Typography: Satoshi (heading), Geist Sans (body), Geist Mono (data)
@@ -548,7 +548,7 @@ export default function App() {
           margin: 0,
           lineHeight: 1.2,
         }}>
-          IPsec Sentinel
+          IPsec VPN Protocol Analyzer
         </h1>
 
         

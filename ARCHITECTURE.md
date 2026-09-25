@@ -1,7 +1,7 @@
-# IPsec Sentinel Architecture
+# IPsec VPN Protocol Analyzer Architecture
 
 ## Overview
-IPsec Sentinel is an AI-driven, PQC-aware VPN configuration auditor. It captures IKE negotiation traffic and ESP payloads to detect misconfigurations, cryptographic weaknesses, and traffic anomalies without relying on payload decryption.
+IPsec VPN Protocol Analyzer is an AI-driven, PQC-aware VPN configuration auditor. It captures IKE negotiation traffic and ESP payloads to detect misconfigurations, cryptographic weaknesses, and traffic anomalies without relying on payload decryption.
 
 ## Core Components
 

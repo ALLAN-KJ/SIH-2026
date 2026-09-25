@@ -1,6 +1,6 @@
-# IPsec Sentinel
+# AI-Powered IPsec VPN Protocol Analyzer and Security Assessment Framework
 
-IPsec Sentinel is a security auditing engine that ingests IPsec VPN negotiation captures (PCAP), parses cryptographic parameters, and evaluates the configuration's security posture using an XGBoost risk classifier. It natively integrates SHAP for explainable scoring, checks against NIST FIPS 203 for Post-Quantum Cryptography (PQC) readiness, and leverages an LLM to generate compliant remediation configurations.
+IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN negotiation captures (PCAP), parses cryptographic parameters, and evaluates the configuration's security posture using an XGBoost risk classifier. It natively integrates SHAP for explainable scoring, checks against NIST FIPS 203 for Post-Quantum Cryptography (PQC) readiness, and leverages an LLM to generate compliant remediation configurations.
 
 **Live Deployment (Demo):**
 - **Frontend:** https://sih-2026-frontend-eight.vercel.app

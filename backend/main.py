@@ -29,7 +29,7 @@ from backend.audit_trail import router as audit_router
 from backend.ike_parser import parse_ike_negotiation
 from backend.active_probe import router as active_probe_router
 
-app = FastAPI(title="IPsec Sentinel API", description="AI-Powered IPsec VPN Protocol Analyzer")
+app = FastAPI(title="IPsec VPN Protocol Analyzer API", description="AI-Powered IPsec VPN Protocol Analyzer and Security Assessment Framework")
 
 CORS_ORIGIN = os.environ.get("CORS_ORIGIN")
 if not CORS_ORIGIN or CORS_ORIGIN == "*":
@@ -95,7 +95,7 @@ def check_groq_health():
 @app.get("/health")
 def health_check():
     """Lightweight endpoint for uptime pingers to keep the backend warm."""
-    return {"status": "ok", "service": "ipsec-sentinel-api"}
+    return {"status": "ok", "service": "ipsec-vpn-protocol-analyzer-api"}
 
 @app.post("/assess", response_model=AssessResponse)
 def assess_ipsec(request: IPsecRequest):

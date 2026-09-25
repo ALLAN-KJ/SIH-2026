@@ -5,7 +5,7 @@ import { prefersReducedMotion } from './components/ui';
 
 /*
  * ═══════════════════════════════════════════════════════════════
- *  IPsec Sentinel — Dashboard Landing
+ *  IPsec VPN Protocol Analyzer — Dashboard Landing
  *
  *  PURPOSE: Lightweight pre-analysis home screen. Gives users
  *  context and three clearly-labelled quick-launch buttons
@@ -350,7 +350,7 @@ export function Dashboard() {
             color: 'var(--color-text-1)',
             letterSpacing: '-0.01em',
           }}>
-            IPsec Sentinel
+            IPsec VPN Protocol Analyzer
           </span>
 
           <button

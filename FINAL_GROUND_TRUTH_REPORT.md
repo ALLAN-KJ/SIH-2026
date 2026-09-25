@@ -1,8 +1,8 @@
-# Final Ground-Truth Report: IPsec Sentinel
+# Final Ground-Truth Report: IPsec VPN Protocol Analyzer
 **> THIS SUPERSEDES ALL PRIOR COMPLIANCE_REPORT.md AND FINAL_AUDIT_REPORT.md VERSIONS <**
 **Date:** September 24, 2026
 
-This document serves as the single, unambiguous source of truth for the IPsec Sentinel project following a comprehensive independent audit and subsequent fixes to the Risk Engine and Dataset Integrity.
+This document serves as the single, unambiguous source of truth for the IPsec VPN Protocol Analyzer project following a comprehensive independent audit and subsequent fixes to the Risk Engine and Dataset Integrity.
 
 ---
 

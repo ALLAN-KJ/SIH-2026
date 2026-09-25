@@ -1,11 +1,11 @@
-# IPsec Sentinel: Project Purpose & Evaluation Guide
+# IPsec VPN Protocol Analyzer: Project Purpose & Evaluation Guide
 
-This document serves as an evaluation guide for Smart India Hackathon (SIH) judges to understand the purpose, architecture, and current state of the IPsec Sentinel project.
+This document serves as an evaluation guide for Smart India Hackathon (SIH) judges to understand the purpose, architecture, and current state of the IPsec VPN Protocol Analyzer project.
 
 ## The Problem
 As quantum computing matures, classical cryptography (like RSA and current Diffie-Hellman groups) used in VPNs is at risk of "harvest now, decrypt later" attacks. Additionally, legacy VPN deployments often suffer from critical misconfigurations (e.g., using DES, MD5, or lacking Perfect Forward Secrecy) that lead to immediate compromise. 
 
-**IPsec Sentinel** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
+**IPsec VPN Protocol Analyzer** is an AI-powered SOC (Security Operations Center) protocol analyzer that operates in two modes: passive ingestion of captured PCAP files, and active live probing of real IKE gateways. It provides:
 1. **Machine Learning Risk Assessment**: An XGBoost model trained to detect complex combinations of misconfigurations. Includes an **Interactive Threat Matrix** to categorize impact zones and an **AI Confidence Score** (calibrated via Platt Scaling) to show true prediction probability.
 2. **Estimated Post-Quantum Readiness Assessment**: Estimates if the negotiated Key Exchange Mechanisms (KEMs) withstand Shor's algorithm, based on proposed IANA KEM identifiers (not yet finalized).
 3. **LLM Remediation Copilot**: Generates NIST SP 800-77 compliant router configurations dynamically via Groq (using Qwen/Llama3 models).
@@ -24,7 +24,7 @@ The pipeline is fully integrated and end-to-end. There are NO mocked paths for t
 
 ## Active Probe Feature
 
-IPsec Sentinel includes an **Active Live Probe** mode (endpoint: `POST /probe/active`) that sends a real IKEv2 SA_INIT packet to a target gateway and parses the live response through the same pipeline as a PCAP upload.
+IPsec VPN Protocol Analyzer includes an **Active Live Probe** mode (endpoint: `POST /probe/active`) that sends a real IKEv2 SA_INIT packet to a target gateway and parses the live response through the same pipeline as a PCAP upload.
 
 ### Authorization Gate (Dual: Frontend + Backend)
 The probe **cannot fire** without all three of the following:
@@ -74,7 +74,7 @@ npm run build
 *(Requires `VITE_API_BASE_URL` at build time).*
 
 ## SIH PS-26160 Alignment Checklist
-*(Verified against the SIH 26160 NTRO IPsec Sentinel requirements)*
+*(Verified against the SIH 26160 NTRO IPsec VPN Protocol Analyzer requirements)*
 
 ### (a) VPN Testbed Generation
 - **Requirement:** Produce tunnels across Tunnel/Transport mode, AES-128/256/GCM/CBC+HMAC, multiple DH groups, PFS on/off, IPv4 AND IPv6. -> **Fully Covered** (100 permutations in /dataset/).
