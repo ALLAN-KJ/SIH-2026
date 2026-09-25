@@ -75,14 +75,7 @@ const ActiveProbeZone = ({ loading, onProbe }: { loading: boolean; onProbe: (ip:
           </p>
         </div>
 
-        {/* Cloud Limitation Notice */}
-        {(window.location.hostname.includes('vercel.app') || window.location.hostname.includes('onrender.com')) && (
-          <div style={{ marginBottom: '24px', padding: '12px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
-            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)', margin: 0, lineHeight: 1.4 }}>
-              <strong>CLOUD DEMO LIMITATION:</strong> Active Probing is currently disabled on this live demo because Render's free tier blocks outbound UDP traffic. To use this feature, please clone the repository and run the backend locally on your own network.
-            </p>
-          </div>
-        )}
+
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>

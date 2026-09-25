@@ -72,8 +72,22 @@ The Active Probe feature allows you to send synthetic IKEv2 handshakes to a live
 ### Testing Locally
 If you are running the backend locally (`localhost:8000`), you can simply use the IP address of your local strongSwan Docker container (e.g., `10.5.0.10`).
 
+### Testing Against the Deployed Backend (Render/Vercel)
+If you are using the public deployed backend, it cannot reach your local container. You must expose your local strongSwan container to the internet using a UDP-capable tunnel.
 
+> [!WARNING]
+> Standard tunneling tools like **Ngrok (free tier)** and **Cloudflare Tunnels** do NOT support UDP traffic. Because IPsec (IKEv2) uses UDP port 500, you must use a UDP-compatible tool.
 
+#### Option 1: Playit.gg (Recommended for quick testing)
+[Playit.gg](https://playit.gg/) is a free tunneling service that supports UDP without requiring port forwarding.
+1. Download and run the Playit.gg agent.
+2. Follow the prompt to link the agent to your account.
+3. In the Playit dashboard, create a Custom UDP Tunnel pointing to your local strongSwan container (e.g., `127.0.0.1:500`).
+4. Playit assigns a public address. (For this project's live SIH demo, use your persistent tunnel: **`della-seamless.tun.ply.gg:35709`**).
+5. In the Active Probe UI, enter this address, and check **Override RFC1918 Restriction**.
+
+#### Option 2: Free-Tier Cloud VM
+Spin up a small, free-tier cloud VM (e.g., AWS EC2 `t2.micro` or GCP `e2-micro`), install Docker, and run the `tests/strongswan/docker-compose.weak.yml` stack directly on the VM. You can then probe the VM's public IP address.
 ### Instructions
 
 #### Step 1: Start the Weak Target
