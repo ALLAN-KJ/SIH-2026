@@ -189,8 +189,19 @@ def parse_ike_negotiation(pcap_path: str) -> dict:
         raise ValueError(f"Unable to parse IKE negotiation from this file: malformed payload or parsing error ({str(e)})")
 
     if result["ike_version"] == "Unknown":
-        if has_esp:
+        if has_esp or result["ah_supported"]:
             raise ValueError("This capture contains ESP-encrypted traffic but no IKE handshake — the analyzer requires the negotiation phase to assess security posture. ESP-only traffic analysis is planned but not yet supported.")
+        elif len(packets) > 0:
+            result["ike_version"] = "Baseline"
+            result["ike_mode"] = "N/A"
+            result["encryption_algorithm"] = "N/A"
+            result["hash_algorithm"] = "N/A"
+            result["auth_method"] = "N/A"
+            result["operation_mode"] = "N/A"
+            result["metadata_exposure"] = "Normal Communication - No VPN Detected"
+            result["sa_lifetime_seconds"] = 0
+            result["dh_group"] = 0
+            result["key_length_bits"] = 0
         else:
             raise ValueError("No valid IKE negotiation found in the PCAP file. Ensure the file contains IKEv1 or IKEv2 UDP traffic on port 500 or 4500.")
 

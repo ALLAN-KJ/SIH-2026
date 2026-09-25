@@ -37,6 +37,11 @@ export const SEV_MAP: Record<string, Sev> = {
     bg:     'var(--color-strong-muted)',
     border: 'var(--color-strong-border)',
   },
+  'Normal (No VPN)': {
+    fg:     'var(--color-text-2)',
+    bg:     'var(--color-surface)',
+    border: 'var(--color-border)',
+  },
 };
 
 export const DEFAULT_SEV: Sev = {
@@ -51,7 +56,7 @@ export const sev = (label: string): Sev => SEV_MAP[label] ?? DEFAULT_SEV;
    Primitives — design tokens enforced here, not inline
    ═══════════════════════════════════════════════════════ */
 
-export const Card = ({ children, className = '', id }: { children: React.ReactNode; className?: string; id?: string }) => (
+export const Card = ({ children, className = '', id, style }: { children: React.ReactNode; className?: string; id?: string; style?: React.CSSProperties }) => (
   <section
     id={id}
     className={`panel-hidden ${className}`}
@@ -59,6 +64,7 @@ export const Card = ({ children, className = '', id }: { children: React.ReactNo
       backgroundColor: 'transparent',
       border: '1px solid var(--color-border)',
       overflow: 'hidden',
+      ...style
     }}
   >
     {children}
@@ -135,4 +141,10 @@ export const Mono = ({ children, style: extraStyle }: { children: React.ReactNod
   }}>
     {children}
   </span>
+);
+
+export const HelperNote = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginTop: '4px' }}>
+    ({children})
+  </div>
 );

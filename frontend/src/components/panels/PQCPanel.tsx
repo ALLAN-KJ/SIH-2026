@@ -1,5 +1,6 @@
 import type { PQCResponse } from '../../types';
-import { Card, CardHeader, SevBadge, sev } from '../ui';
+import { CaretRight } from '@phosphor-icons/react';
+import { Card, CardHeader, SevBadge, sev, HelperNote } from '../ui';
 
 export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
   const label = pqc.pqc_status === 'Quantum-Safe' ? 'Strong' : pqc.pqc_status === 'Unrecognized' ? 'Moderate' : 'Critical';
@@ -26,6 +27,9 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
           </span>
           <span style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-3)' }}>/100</span>
           <SevBadge label={pqc.pqc_status} sev={s} />
+          <div style={{ marginLeft: 'auto' }}>
+            <HelperNote>how ready this config is for quantum threats</HelperNote>
+          </div>
         </div>
 
         <p style={{
@@ -54,9 +58,7 @@ export const PQCPanel = ({ pqc }: { pqc: PQCResponse }) => {
             gap: '6px',
             userSelect: 'none' as const,
           }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 6 15 12 9 18" />
-            </svg>
+            <CaretRight size={14} weight="bold" />
             Details
           </summary>
           <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>

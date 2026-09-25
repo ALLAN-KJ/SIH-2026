@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
-import { api } from './api';
+import { api } from './lib/api';
 import type { AnalysisResult, RemediateResponse } from './types';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,8 +10,13 @@ import { LLMPanel } from './components/panels/LLMPanel';
 import { AuditPanel } from './components/panels/AuditPanel';
 import { SihDemoModal } from './components/SihDemoModal';
 import { ReportExport } from './components/ReportExport';
+import { X, Play, FileArrowUp, FileText } from '@phosphor-icons/react';
 
-gsap.registerPlugin(ScrollTrigger);
+export interface AnalysisMetadata {
+  sourceName: string;
+  sourceType: 'file' | 'probe' | 'sample';
+  timestamp: string;
+}
 
 /*
  * ═══════════════════════════════════════════════════════════════
@@ -113,6 +118,7 @@ const UploadZone = ({ loading, fileInputRef, onFileChange, loadSample }: {
   loadSample: (filename: string) => void;
 }) => {
   const [step, setStep] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     if (!loading) { setStep(0); return; }
@@ -172,11 +178,26 @@ const UploadZone = ({ loading, fileInputRef, onFileChange, loadSample }: {
             fileInputRef.current?.click();
           }
         }}
+        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragging(false);
+          if (e.dataTransfer.files && e.dataTransfer.files[0] && !loading) {
+            // Re-fire a change event essentially
+            if (fileInputRef.current) {
+              fileInputRef.current.files = e.dataTransfer.files;
+              const event = new Event('change', { bubbles: true });
+              fileInputRef.current.dispatchEvent(event);
+              onFileChange({ target: fileInputRef.current } as any);
+            }
+          }
+        }}
         onMouseEnter={(e) => {
           if (!loading) (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-accent)';
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+          if (!isDragging) (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
         }}
       >
         {loading ? (
@@ -204,12 +225,15 @@ const UploadZone = ({ loading, fileInputRef, onFileChange, loadSample }: {
           </>
         ) : (
           <>
+            <div style={{ marginBottom: '12px', color: isDragging ? 'var(--color-accent)' : 'var(--color-text-3)' }}>
+               <FileArrowUp weight="light" size={48} />
+            </div>
             <span style={{
               fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-2)',
-              marginBottom: '12px',
+              color: isDragging ? 'var(--color-text-1)' : 'var(--color-text-2)',
+              marginBottom: '16px',
             }}>
-              Drop .pcap / .pcapng or browse
+              {isDragging ? 'Drop file here' : 'Drop .pcap / .pcapng or browse'}
             </span>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button
@@ -249,7 +273,7 @@ const UploadZone = ({ loading, fileInputRef, onFileChange, loadSample }: {
                   gap: '6px'
                 }}
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <FileText size={16} weight="bold" />
                 Generate Demo PCAP
               </button>
             </div>
@@ -324,11 +348,9 @@ const ErrorBanner = ({ message, onDismiss }: { message: string; onDismiss: () =>
       alignItems: 'flex-start',
       gap: '12px',
     }}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-crit)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
-        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-        <line x1="12" y1="9" x2="12" y2="13" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
-      </svg>
+      <div style={{ flexShrink: 0, marginTop: '2px', color: 'var(--color-crit)' }}>
+        <X size={18} weight="bold" />
+      </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-crit)' }}>
           Analysis failed
@@ -351,10 +373,7 @@ const ErrorBanner = ({ message, onDismiss }: { message: string; onDismiss: () =>
         }}
         aria-label="Dismiss error"
       >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
+        <X size={16} weight="bold" />
       </button>
     </div>
   );
@@ -374,6 +393,7 @@ export default function App() {
   );
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
+  const [metadata, setMetadata] = useState<AnalysisMetadata | null>(null);
   const [lastSuccessfulRemediation, setLastSuccessfulRemediation] = useState<RemediateResponse | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
@@ -424,6 +444,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: file.name,
+      sourceType: 'file',
+      timestamp: new Date().toISOString()
+    });
     try {
       const res = await api.analyzePCAP(file);
       setResults(res);
@@ -442,6 +467,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: filename,
+      sourceType: 'sample',
+      timestamp: new Date().toISOString()
+    });
     try {
       const resp = await fetch(`/${filename}`);
       if (!resp.ok) throw new Error('Failed to load sample PCAP');
@@ -463,6 +493,11 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
+    setMetadata({
+      sourceName: `Live probe: ${ip}`,
+      sourceType: 'probe',
+      timestamp: new Date().toISOString()
+    });
     try {
       const res = await api.probeTarget(ip, auth, true);
       setResults(res);
@@ -546,12 +581,12 @@ export default function App() {
               gap: '6px'
             }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <Play size={14} weight="bold" />
             Guided Demo
           </button>
-          {results && (
+          {results && metadata && (
             <>
-              <ReportExport results={results} />
+              <ReportExport results={results} metadata={metadata} />
               <button
                 onClick={() => { setResults(null); setError(null); }}
                 className="transition-default"

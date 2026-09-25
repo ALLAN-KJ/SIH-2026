@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import type { AssessResponse } from '../../types';
-import { Card, CardHeader, Overline, SevBadge, Mono, sev, prefersReducedMotion } from '../ui';
+import { CaretRight, WarningOctagon, CheckCircle } from '@phosphor-icons/react';
+import { Card, CardHeader, Overline, SevBadge, Mono, sev, prefersReducedMotion, HelperNote } from '../ui';
 import { ThreatMatrix } from './ThreatMatrix';
 
 export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }) => {
@@ -54,9 +55,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
               <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                 AI Confidence: {risk.risk_confidence}%
               </span>
-              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
-                (how sure the model is about this specific prediction)
-              </span>
+              <HelperNote>how sure the model is about this specific prediction</HelperNote>
             </div>
           )}
         </div>
@@ -73,7 +72,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
         {/* IPsec Extracted Parameters */}
         {ipsec && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>Extracted Cleartext Metadata (Exposure Report)</Overline>
+            <Overline>Connection Details (Metadata Exposure)</Overline>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '8px' }}>
               The following connection parameters were exposed in cleartext during IKE negotiation:
             </p>
@@ -123,7 +122,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
         {/* ESP Traffic Classification */}
         {risk.esp_anomaly_status && (
           <div style={{ marginBottom: '24px' }}>
-            <Overline>ESP Traffic Classification</Overline>
+            <Overline>Traffic Analysis</Overline>
             
             {/* Traffic Type Prediction */}
             {risk.traffic_type && (
@@ -147,9 +146,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
                   <div style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                     AI Confidence: {risk.traffic_confidence}%
                   </div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
-                    (model certainty of traffic type)
-                  </div>
+                  <HelperNote>how sure the AI is about the traffic type</HelperNote>
                 </div>
               </div>
             )}
@@ -165,19 +162,11 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
               alignItems: 'center'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={risk.is_esp_anomaly ? "var(--color-crit)" : "var(--color-accent)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  {risk.is_esp_anomaly ? (
-                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" />
-                  ) : (
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  )}
-                  {risk.is_esp_anomaly ? (
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                  ) : (
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  )}
-                  {risk.is_esp_anomaly && <line x1="12" y1="16" x2="12.01" y2="16" />}
-                </svg>
+                {risk.is_esp_anomaly ? (
+                  <WarningOctagon size={18} weight="bold" color="var(--color-crit)" />
+                ) : (
+                  <CheckCircle size={18} weight="bold" color="var(--color-accent)" />
+                )}
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                   {risk.esp_anomaly_status}
                 </span>
@@ -209,15 +198,13 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
             gap: '6px',
             userSelect: 'none' as const,
           }}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transition: 'transform 150ms' }}>
-              <polyline points="9 6 15 12 9 18" />
-            </svg>
+            <CaretRight size={14} weight="bold" style={{ transition: 'transform 150ms' }} />
             Details
           </summary>
 
           <div style={{ marginTop: '16px' }}>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', marginBottom: '16px' }}>
-              XGBoost classifier · SHAP explainability
+              AI Model Explainability · Top Factors
             </p>
             {/* SHAP chart */}
             <div style={{ marginBottom: '16px' }}>

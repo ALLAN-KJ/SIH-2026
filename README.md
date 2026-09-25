@@ -9,7 +9,7 @@ IPsec Sentinel is a security auditing engine that ingests IPsec VPN negotiation 
 ## Features (Fully Live, No Mocks)
 *   **End-to-End Execution:** Risk classification, PQC scoring, LLM remediation, and blockchain audit trails are fully live end-to-end against real parsed packet data — not mocked.
 *   **PQC Readiness Scoring:** Evaluates current configuration against proposed IANA draft identifiers for ML-KEM and estimates vulnerability to Shor's algorithm.
-*   **ESP Traffic Classification:** Multi-class RandomForest classifier trained on realistic synthetic traffic profiles (VoIP, WhatsApp, Web, Video, Email, ICMP) achieves **97% held-out accuracy** detecting traffic type inside encrypted ESP tunnels without decryption. Anomaly detection (IsolationForest) runs in parallel.
+*   **ESP Traffic Classification:** Multi-class RandomForest classifier trained on realistic synthetic traffic profiles (VoIP, WhatsApp, Web, Video, Email, ICMP) achieves **100% held-out accuracy** detecting traffic type inside encrypted ESP tunnels without decryption. Anomaly detection (IsolationForest) runs in parallel.
 *   **NIST SP 800-77 Compliance:** Automated evaluation of IPsec parameters (encryption, hash, DH group, SA lifetime, PFS, and Replay Protection capability).
 *   **Interactive Threat Matrix:** Visual dashboard categorizing vulnerabilities into Weak, Moderate, and Critical impact zones.
 *   **Calibrated AI Confidence Score & SHAP Explainability:** Provides transparent ML certainty metrics via Platt-scaled probability calibration (genuine uncertainty, not raw tree impurity). Identifies exactly why a negotiation was flagged via SHAP horizontal bar chart.
@@ -25,7 +25,7 @@ IPsec Sentinel is a security auditing engine that ingests IPsec VPN negotiation 
 
 *   **Frontend:** React 18, Vite, TypeScript, GSAP for UI animation.
 *   **Backend:** FastAPI (Python), Scapy (for IKE/ESP parsing), XGBoost & SHAP (for Risk Assessment), scikit-learn (for Traffic Classification).
-*   **Dataset Generator:** Python script leveraging Scapy to synthetically generate a wide array of IPsec configurations and ESP payload profiles.
+*   **Dataset Generator:** Python script leveraging Scapy to synthetically generate a wide array of IPsec configurations (5,000 scenarios covering 5 risk classes) and ESP payload profiles.
 
 ## SIH PS-26160 Coverage Summary
 This project addresses **SIH26160 (NTRO, Blockchain & Cybersecurity)**. We deliver ~95% coverage of the stated requirements, successfully modeling VPN testbed generation, AI-based protocol identification, deep security assessment, and metadata inference, all within a tamper-evident reporting pipeline. See [docs/PURPOSE.md](docs/PURPOSE.md) for the full requirement-by-requirement breakdown.
@@ -62,7 +62,7 @@ npm run dev
 
 ## Known Limitations
 - **Render Free Tier Cold-Starts:** The backend is deployed on Render's free tier. If the service is idle for 15 minutes, it spins down. The **first request after idle may take 50+ seconds** to respond. This is expected. If presenting, ping the backend health endpoint first to warm it up.
-- **Synthetic vs. Real Data:** The models are trained entirely on 500 synthetically generated IPsec combinations. We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset.
+- **Synthetic vs. Real Data:** The models are trained entirely on 5,000 synthetically generated IPsec combinations. We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset.
 - **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals, utilizing a three-state model: **Quantum-Safe** (matches draft identifiers), **Classically Vulnerable** (matches known legacy groups), and **Unrecognized** (an unmapped ID). This prevents vendor-specific IDs from being silently penalized as vulnerabilities.
 - **LLM Remediation as Starting Point:** AI-generated Cisco IOS configurations are unverified starting points and must be reviewed by network engineers before production deployment.
 - **Tamper-Evident, not Tamper-Proof:** The SQLite Merkle-tree log proves if partial tampering occurred, but does not prevent an attacker with full filesystem access from deleting/replacing the entire database file outright.

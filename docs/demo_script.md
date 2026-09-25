@@ -1,39 +1,34 @@
-# Demo Script: IPsec Sentinel
+# IPsec Sentinel - 90-Second Demo Script
 
-**Theme:** "Zero Trust through Mathematical Verification."
+## 1. Problem Framing (0:00 - 0:10)
+**Action:** Show the dashboard landing page.
+**Voiceover:** "Traditional IPsec audits are manual and rigid. IPsec Sentinel automates this by combining a machine learning risk engine with deep packet inspection to evaluate VPN security in real-time."
 
-## 1. Introduction
-- **Judge Pitch:** "We are demonstrating IPsec Sentinel. Everything you are about to see—risk classification, PQC scoring, LLM remediation, and blockchain audit trail—is fully live, end-to-end against real parsed packet data. We are not using mocked data or static dashboards."
-- **Novelty:** Explain that our tool bridges the gap between passive packet capture and AI-driven remediation.
-- **Beta Feature (Honesty Check):** "We've included an early-stage beta feature: ESP Traffic Anomaly Detection. Using an Isolation Forest trained on real packet size and inter-arrival variances, we can detect anomalous ESP flows without decrypting the payload. Full multi-class protocol classification is future work, but anomaly detection is live today."
+## 2. Upload & Sample Selection (0:10 - 0:20)
+**Action:** Click the "Run Demo Scenarios" or upload the first sample.
+**Voiceover:** "We'll test three distinct scenarios to demonstrate the AI's dynamic scoring."
 
-## 2. Live Demo: PCAP Upload
-- **Action:** Click "Upload PCAP" and select `scenario_critical_legacy.pcap`.
-- **Talking Points:**
-  - "Notice the parser instantly extracting cryptographic parameters."
-  - "The XGBoost model scores this as Critical (99/100)."
-  - **SHAP Explanation:** "Why this score? Let's open the Technical Details. This horizontal bar chart is live SHAP (SHapley Additive exPlanations) data proving *exactly* which features the model penalized, ensuring explainable AI."
+## 3. Risk Verdict & SHAP Explainability (0:20 - 0:40)
+**Action:** Show the results for the three scenarios sequentially.
+**Voiceover:** 
+- "First, a legacy IKEv1 configuration. The model flags this as **Critical** with a score of **96.04**, correctly identifying weak 3DES encryption and missing PFS."
+- "Next, a transition state. The model dynamically adjusts the verdict to **Moderate** with a score of **51.87**, noting improved DH groups but lingering legacy hashes."
+- "Finally, a modern IKEv2 setup. The engine confirms it as **Strong** with a score of **5.84**."
+**Action:** Hover over the SHAP explainability panel.
+**Voiceover:** "Our transparent AI doesn't just give a score; the SHAP panel explains exactly *why* a configuration is risky, exposing the top contributing factors."
 
-## 3. Post-Quantum Cryptography (PQC)
-- **Action:** Scroll to the PQC panel.
-- **Talking Points:** 
-  - "NIST and IANA are finalizing ML-KEM identifiers. We score legacy DH groups as 'Classically Vulnerable'."
+## 4. LLM Remediation (0:40 - 0:55)
+**Action:** Scroll down to the AI Remediation section.
+**Voiceover:** "When vulnerabilities are found, the system's LLM remediation engine instantly generates a secure, drop-in replacement configuration, eliminating the guesswork for network admins."
 
-## 4. LLM Remediation Copilot
-- **Action:** Open the Remediation Copilot panel.
-- **Talking Points:**
-  - "Instead of just telling a network engineer they failed, we provide the exact Cisco IOS configuration needed to fix it."
-  - "This is generated live by a Qwen 27B model, fed our exact findings and NIST citations, using robust regex extraction to guarantee a syntactically valid output."
+## 5. PQC Score (0:55 - 1:05)
+**Action:** Point to the Post-Quantum Readiness panel.
+**Voiceover:** "Simultaneously, the tool assesses Post-Quantum Cryptography readiness, scoring the tunnel against future quantum threats based on algorithmic resilience."
 
-## 5. Blockchain Audit Trail
-- **Action:** Scroll to the Audit Log.
-- **Talking Points:**
-  - "To prevent insider threats from covering up bad configurations, every report is hashed and stored in a Merkle tree."
+## 6. Blockchain Audit / Tamper-Check (1:05 - 1:20)
+**Action:** Show the Export PDF and Audit log.
+**Voiceover:** "All verdicts are permanently hashed to an append-only ledger to prevent tampering. Finally, we can export dual Executive and Technical PDF reports with a single click."
 
-## 6. Edge Cases & Safety
-- **Action:** Attempt to upload a malformed PCAP or use the Active Probe against a public IP.
-- **Talking Points:**
-  - "Our backend is hardened. It rejects malformed data, and the Active Probe enforces strict authorization checks and rate-limiting to prevent misuse."
-
-## 7. Conclusion
-- "IPsec Sentinel brings explainable AI, proactive remediation, and post-quantum readiness to VPN security auditing."
+## 7. Close (1:20 - 1:30)
+**Action:** Return to top of dashboard.
+**Voiceover:** "IPsec Sentinel: Delivering AI-driven, tamper-evident security assessments for the next generation of cryptographic protocols."

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { API_URL } from './api';
+import { API_URL } from './lib/api';
 import gsap from 'gsap';
 import { prefersReducedMotion } from './components/ui';
 
@@ -29,43 +29,7 @@ function goToConsole(mode?: 'passive' | 'active' | 'demo') {
   window.location.hash = mode ? `#/console?mode=${mode}` : '#/console';
 }
 
-/* ── Inline SVG icons ── */
-
-const IconUpload = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
-    aria-hidden="true">
-    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-const IconRadar = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
-    aria-hidden="true">
-    <circle cx="12" cy="12" r="2" />
-    <path d="M16.24 7.76a6 6 0 010 8.49m-8.48-.01a6 6 0 010-8.49m11.31-2.82a10 10 0 010 14.14m-14.14 0a10 10 0 010-14.14" />
-  </svg>
-);
-
-const IconPlay = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
-    aria-hidden="true">
-    <polygon points="5 3 19 12 5 21 5 3" />
-  </svg>
-);
-
-const IconArrowRight = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-    aria-hidden="true">
-    <line x1="5" y1="12" x2="19" y2="12" />
-    <polyline points="12 5 19 12 12 19" />
-  </svg>
-);
+import { UploadSimple, Target, Play, ArrowRight } from '@phosphor-icons/react';
 
 /* ── Health dot ── */
 
@@ -213,7 +177,7 @@ function LaunchButton({ id, icon, label, sublabel, accentColor, onClick }: Launc
           gap: '6px',
         }}>
           {label}
-          <IconArrowRight />
+          <ArrowRight weight="bold" size={14} />
         </span>
         <span style={{
           fontSize: 'var(--text-xs)',
@@ -415,7 +379,7 @@ export function Dashboard() {
             }}
           >
             Console
-            <IconArrowRight />
+            <ArrowRight weight="bold" size={14} />
           </button>
         </header>
 
@@ -462,7 +426,7 @@ export function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginBottom: '36px' }}>
               <LaunchButton
                 id="dash-launch-passive"
-                icon={<IconUpload />}
+                icon={<UploadSimple weight="regular" size={20} />}
                 label="Upload PCAP"
                 sublabel="Drop a .pcap or .pcapng — offline analysis, no traffic sent"
                 accentColor="var(--color-mod)"
@@ -470,7 +434,7 @@ export function Dashboard() {
               />
               <LaunchButton
                 id="dash-launch-active"
-                icon={<IconRadar />}
+                icon={<Target weight="regular" size={20} />}
                 label="Active Probe"
                 sublabel="Send live IKE handshakes to a target you own and are authorized to test"
                 accentColor="var(--color-weak)"
@@ -478,7 +442,7 @@ export function Dashboard() {
               />
               <LaunchButton
                 id="dash-launch-demo"
-                icon={<IconPlay />}
+                icon={<Play weight="regular" size={20} />}
                 label="Guided Demo"
                 sublabel="Walk through a pre-loaded critical-risk scenario with step-by-step explanations"
                 accentColor="var(--color-accent)"

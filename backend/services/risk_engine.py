@@ -30,6 +30,21 @@ def evaluate_risk(request) -> AssessResponse:
     if not model or not model_calibrated:
         raise ValueError("Models not loaded")
         
+    if request.ike_version == "Baseline":
+        return AssessResponse(
+            risk_score=0.0,
+            risk_label="Normal (No VPN)",
+            risk_confidence=100.0,
+            top_contributing_factors={"Traffic Type": "Non-VPN"},
+            flagged_issues=[],
+            esp_anomaly_status="N/A",
+            esp_anomaly_score=0.0,
+            is_esp_anomaly=False,
+            traffic_type="Baseline (Cleartext/Other)",
+            traffic_confidence=100.0,
+            metadata_exposure=request.metadata_exposure
+        )
+
     req_dict = request.model_dump()
     # Remove esp_features before feeding to the XGBoost risk model (it wasn't trained on it)
     if "esp_features" in req_dict:
@@ -46,7 +61,7 @@ def evaluate_risk(request) -> AssessResponse:
     pred_idx = model_calibrated.predict(X_processed)[0]
     risk_label = label_encoder.inverse_transform([pred_idx])[0]
     
-    class_weights = {"Strong": 0, "Moderate": 50, "Weak": 75, "Critical": 100}
+    class_weights = {"Strong": 0, "Low": 25, "Moderate": 50, "Weak": 75, "Critical": 100}
     classes = label_encoder.classes_
     risk_score = sum(probs[i] * class_weights.get(classes[i], 50) for i in range(len(classes)))
     
