@@ -61,6 +61,7 @@ npm run dev
 ``
 
 ## Known Limitations
+- **Active Probing restricted to Local Node:** Render's free tier Web Services block outbound UDP traffic. Because of this PaaS-level limitation, the Active Probing feature (which requires sending UDP port 500 packets) will return a 403 error on the live cloud demo. This feature is fully functional but strictly requires running the backend locally to use. PCAP uploading and analysis (the primary demo path) remains fully independent and functional on the live site.
 - **Render Free Tier Cold-Starts:** The backend is deployed on Render's free tier. If the service is idle for 15 minutes, it spins down. The **first request after idle may take 50+ seconds** to respond. This is expected. If presenting, ping the backend health endpoint first to warm it up.
 - **Synthetic vs. Real Data:** The models are trained entirely on 5,000 synthetically generated IPsec combinations. We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset.
 - **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals, utilizing a three-state model: **Quantum-Safe** (matches draft identifiers), **Classically Vulnerable** (matches known legacy groups), and **Unrecognized** (an unmapped ID). This prevents vendor-specific IDs from being silently penalized as vulnerabilities.

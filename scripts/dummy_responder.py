@@ -20,7 +20,6 @@ def start_dummy_responder(port=5000):
     # Bind to 5000 instead of 500 to avoid needing Administrator/Root privileges
     sock.bind(("0.0.0.0", port))
     print(f"[*] Dummy IKEv2 Responder listening on UDP {port}...")
-    print(f"[*] Map your Playit.gg UDP tunnel to local port {port}!")
     print(f"[*] Waiting for incoming Active Probes...\n")
     
     # Define our three mock configurations

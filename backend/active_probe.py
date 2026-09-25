@@ -106,12 +106,22 @@ async def probe_active(req: ActiveProbeRequest, request: Request):
     import socket
     check_rate_limit(request, limit=1, window=10)
     
-    # 1. Mandatory Authorization Gate
+    # 1. Platform Restriction (Render Free Tier Blocks Outbound UDP)
+    # If a standalone PROBE_NODE_URL is configured, we bypass this block since we will proxy to the VM.
+    probe_node_url = os.environ.get("PROBE_NODE_URL")
+    if os.environ.get("RENDER") and not probe_node_url:
+        log_audit_attempt(req.target_ip, req.auth_confirmation, False, "Blocked by Render PaaS UDP restrictions.")
+        raise HTTPException(
+            status_code=403, 
+            detail="Active Probing is unavailable on the live cloud demo due to Render's free tier blocking outbound UDP traffic. Please clone the repository and run the backend locally to use this feature."
+        )
+
+    # 2. Mandatory Authorization Gate
     if req.auth_confirmation != "I AM AUTHORIZED":
         log_audit_attempt(req.target_ip, req.auth_confirmation, False, "Invalid authorization confirmation phrase.")
         raise HTTPException(status_code=403, detail="Unauthorized: You must explicitly confirm authorization.")
         
-    # Parse potential host:port format from Playit.gg
+    # Parse potential host:port format
     target_host = req.target_ip
     target_port = 500
     if ":" in target_host and not target_host.startswith("[") and target_host.count(":") == 1:
@@ -138,7 +148,31 @@ async def probe_active(req: ActiveProbeRequest, request: Request):
     log_audit_attempt(req.target_ip, req.auth_confirmation, True, "Probe initiated.")
     
     try:
-        pcap_path = await run_in_threadpool(craft_and_send_probe, resolved_ip, target_port)
+        probe_node_url = os.environ.get("PROBE_NODE_URL")
+        if probe_node_url:
+            import httpx
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                resp = await client.post(
+                    f"{probe_node_url}/probe/raw", 
+                    json={
+                        "target_ip": req.target_ip,
+                        "auth_confirmation": req.auth_confirmation,
+                        "override_rfc1918": req.override_rfc1918
+                    }
+                )
+                if resp.status_code != 200:
+                    raise HTTPException(status_code=resp.status_code, detail=resp.text)
+                
+                # Save downloaded PCAP
+                fd, pcap_path = tempfile.mkstemp(suffix=".pcap")
+                os.write(fd, resp.content)
+                os.close(fd)
+        else:
+            # Fallback to local probe
+            pcap_path = await run_in_threadpool(craft_and_send_probe, resolved_ip, target_port)
+            
+    except HTTPException as e:
+        raise e
     except Exception as e:
         raise HTTPException(status_code=504, detail=str(e))
         

@@ -71,9 +71,18 @@ const ActiveProbeZone = ({ loading, onProbe }: { loading: boolean; onProbe: (ip:
         {/* Safety Disclaimer */}
         <div style={{ marginBottom: '24px', padding: '12px', border: '1px solid var(--color-crit-border)', backgroundColor: 'transparent' }}>
           <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-crit)', margin: 0, lineHeight: 1.4 }}>
-            <strong>WARNING:</strong> This tool sends active network packets. Unauthorized scanning is prohibited by law (e.g. India IT Act Section 43/66). You must only probe targets you own or have explicit authorization to test. Default restrictions limit scanning to private RFC1918 IPs.
+            <strong>WARNING:</strong> This tool sends active network packets. Unauthorized scanning is prohibited by law. You must only probe targets you own or have explicit authorization to test. Default restrictions limit scanning to private RFC1918 IPs.
           </p>
         </div>
+
+        {/* Cloud Limitation Notice */}
+        {(window.location.hostname.includes('vercel.app') || window.location.hostname.includes('onrender.com')) && (
+          <div style={{ marginBottom: '24px', padding: '12px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+            <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-2)', margin: 0, lineHeight: 1.4 }}>
+              <strong>CLOUD DEMO LIMITATION:</strong> Active Probing is currently disabled on this live demo because Render's free tier blocks outbound UDP traffic. To use this feature, please clone the repository and run the backend locally on your own network.
+            </p>
+          </div>
+        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
