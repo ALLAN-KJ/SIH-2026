@@ -4,9 +4,9 @@ export const ThreatMatrix = ({ riskLabel }: { riskLabel: string }) => {
   const getCellColor = (likelihood: string, impact: string) => {
     // Basic mapping logic just to highlight the cell corresponding to the risk label
     if (riskLabel === 'Critical' && likelihood === 'High' && impact === 'High') return 'var(--color-crit)';
-    if (riskLabel === 'Weak' && likelihood === 'Medium' && impact === 'High') return 'var(--color-weak)';
-    if (riskLabel === 'Moderate' && likelihood === 'Medium' && impact === 'Medium') return 'var(--color-mod)';
-    if (riskLabel === 'Strong' && likelihood === 'Low' && impact === 'Low') return 'var(--color-strong)';
+    if ((riskLabel === 'Weak' || riskLabel === 'High') && likelihood === 'Medium' && impact === 'High') return 'var(--color-weak)';
+    if ((riskLabel === 'Moderate' || riskLabel === 'Medium') && likelihood === 'Medium' && impact === 'Medium') return 'var(--color-mod)';
+    if ((riskLabel === 'Strong' || riskLabel === 'Low') && likelihood === 'Low' && impact === 'Low') return 'var(--color-strong)';
     return 'var(--color-well)';
   };
 

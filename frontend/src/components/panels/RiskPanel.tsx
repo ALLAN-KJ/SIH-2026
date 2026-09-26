@@ -165,7 +165,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
                 {risk.is_esp_anomaly ? (
                   <WarningOctagon size={18} weight="bold" color="var(--color-crit)" />
                 ) : (
-                  <CheckCircle size={18} weight="bold" color="var(--color-accent)" />
+                  <CheckCircle size={18} weight="bold" color="var(--color-strong)" />
                 )}
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 500, color: 'var(--color-text-1)' }}>
                   {risk.esp_anomaly_status}

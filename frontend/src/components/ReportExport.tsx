@@ -60,7 +60,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>IKE Version</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.ike_version}</td>
-            <td style={{ padding: '8px 4px', color: '#22c55e' }}>IKEv2</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>IKEv2</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>Mode</td>
@@ -70,22 +70,22 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>Encryption</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.encryption_algorithm}</td>
-            <td style={{ padding: '8px 4px', color: '#22c55e' }}>AES-256-GCM</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>AES-256-GCM</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>Hash Algorithm</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.hash_algorithm}</td>
-            <td style={{ padding: '8px 4px', color: '#22c55e' }}>SHA384 or SHA512</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>SHA384 or SHA512</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>DH Group</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.dh_group}</td>
-            <td style={{ padding: '8px 4px', color: '#22c55e' }}>Group 19, 20, 21 or 31</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>Group 19, 20, 21 or 31</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>PFS Status</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.pfs_enabled ? 'Enabled' : 'Disabled'}</td>
-            <td style={{ padding: '8px 4px', color: '#22c55e' }}>Enabled</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>Enabled</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>SA Lifetime</td>
@@ -93,10 +93,22 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
             <td style={{ padding: '8px 4px' }}>{"<= 86400s (IKE) / <= 28800s (IPsec)"}</td>
           </tr>
           <tr style={{ borderBottom: '1px solid #222' }}>
+            <td style={{ padding: '8px 4px' }}>Auth Method</td>
+            <td style={{ padding: '8px 4px' }}>{results.ipsec_request.auth_method || 'Unknown'}</td>
+            <td style={{ padding: '8px 4px', color: sev('Strong').fg }}>Certificate (RSA/ECDSA)</td>
+          </tr>
+          <tr style={{ borderBottom: '1px solid #222' }}>
             <td style={{ padding: '8px 4px' }}>IP Version</td>
             <td style={{ padding: '8px 4px' }}>{results.ipsec_request.ip_version}</td>
             <td style={{ padding: '8px 4px' }}>Any</td>
           </tr>
+          {results.ipsec_request.esp_features && (
+            <tr style={{ borderBottom: '1px solid #222' }}>
+              <td style={{ padding: '8px 4px' }}>ESP Packets Analyzed</td>
+              <td style={{ padding: '8px 4px' }}>{results.ipsec_request.esp_features.esp_packet_count} packets</td>
+              <td style={{ padding: '8px 4px' }}>N/A</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
@@ -124,11 +136,11 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
         disabled={isExporting}
         style={{
           fontSize: 'var(--text-sm)',
-          fontWeight: 500,
-          color: 'var(--color-text-1)',
-          backgroundColor: 'transparent',
+          fontWeight: 600,
+          color: 'var(--color-ground)',
+          backgroundColor: 'var(--color-text-1)',
           padding: '8px 16px',
-          border: '1px solid var(--color-border)',
+          border: '1px solid var(--color-text-1)',
           cursor: isExporting ? 'wait' : 'pointer',
           opacity: isExporting ? 0.5 : 1,
         }}
@@ -182,8 +194,8 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
             <div style={{ color: '#888', fontSize: '12px' }}>Generated securely via local audit node.</div>
           </div>
           
-          <div style={{ backgroundColor: 'rgba(251,146,60,0.1)', border: '1px solid #FB923C', color: '#FB923C', padding: '12px', fontSize: '12px', marginBottom: '40px', borderRadius: '4px' }}>
-            <strong>Notice:</strong> AI-generated analysis — recommended configurations should be reviewed by a qualified network/security engineer before deployment.
+          <div style={{ backgroundColor: sev('Critical').bg, border: `2px solid ${sev('Critical').fg}`, color: sev('Critical').fg, padding: '16px', fontSize: '14px', marginBottom: '40px', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>
+            ⚠ AI-GENERATED ANALYSIS — REVIEW BEFORE APPLYING TO PRODUCTION SYSTEMS
           </div>
           
           {renderMetadata()}
@@ -202,7 +214,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
             
             <div style={{ flex: 1, backgroundColor: '#111', padding: '24px', border: '1px solid #222' }}>
               <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '12px' }}>Post-Quantum Status</div>
-              <div style={{ fontSize: '24px', fontWeight: 500, color: results.pqc.pqc_score > 60 ? '#22c55e' : (results.pqc.pqc_score > 30 ? '#eab308' : '#ef4444'), marginBottom: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: 500, color: results.pqc.pqc_status === 'Quantum-Safe' ? sev('Strong').fg : (results.pqc.pqc_status === 'Unrecognized' ? sev('Moderate').fg : sev('Critical').fg), marginBottom: '8px' }}>
                 {results.pqc.pqc_status}
               </div>
               <div style={{ fontSize: '14px', color: '#ccc' }}>Readiness Score: {results.pqc.pqc_score.toFixed(1)}/100</div>
@@ -215,7 +227,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
               {results.risk.flagged_issues.length > 0 ? results.risk.flagged_issues[0] : 'The tunnel configuration meets baseline security expectations with no critical immediate vulnerabilities identified.'}
             </p>
             {results.risk.metadata_exposure && (
-              <p style={{ fontSize: '14px', color: results.risk.metadata_exposure.includes('Public') ? '#ef4444' : '#888', marginTop: '12px' }}>
+              <p style={{ fontSize: '14px', color: results.risk.metadata_exposure.includes('Public') ? sev('Critical').fg : '#888', marginTop: '12px' }}>
                 Metadata Exposure: {results.risk.metadata_exposure}
               </p>
             )}
@@ -251,7 +263,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
                 {results.risk.traffic_confidence !== undefined && (
                   <div style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>AI Confidence: {results.risk.traffic_confidence}%</div>
                 )}
-                <div style={{ fontSize: '14px', color: results.risk.is_esp_anomaly ? '#ef4444' : '#22c55e', marginTop: '8px' }}>
+                <div style={{ fontSize: '14px', color: results.risk.is_esp_anomaly ? sev('Critical').fg : sev('Strong').fg, marginTop: '8px' }}>
                   {results.risk.esp_anomaly_status} (Score: {results.risk.esp_anomaly_score})
                 </div>
              </div>
@@ -271,7 +283,7 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
             <ul style={{ paddingLeft: '20px', color: '#ccc', fontSize: '14px', lineHeight: '1.6' }}>
               {Object.entries(results.risk.top_contributing_factors).map(([k, val]) => {
                 const v = val as number;
-                return <li key={k}>{k}: <span style={{ color: v > 0 ? s.fg : '#ef4444' }}>{v > 0 ? '+' : ''}{v.toFixed(3)}</span></li>;
+                return <li key={k}>{k}: <span style={{ color: v > 0 ? s.fg : sev('Critical').fg }}>{v > 0 ? '+' : ''}{v.toFixed(3)}</span></li>;
               })}
             </ul>
           </div>
@@ -288,8 +300,8 @@ export const ReportExport: React.FC<Props> = ({ results, metadata }) => {
 
           <div>
              <div style={{ fontSize: '12px', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '16px', borderBottom: '1px solid #333', paddingBottom: '8px' }}>Raw Config Recommendations</div>
-             <div style={{ backgroundColor: 'rgba(251,146,60,0.1)', border: '1px solid #FB923C', color: '#FB923C', padding: '12px', fontSize: '12px', marginBottom: '16px', borderRadius: '4px' }}>
-               <strong>Notice:</strong> AI-generated analysis — recommended configurations should be reviewed by a qualified network/security engineer before deployment.
+             <div style={{ backgroundColor: sev('Critical').bg, border: `2px solid ${sev('Critical').fg}`, color: sev('Critical').fg, padding: '16px', fontSize: '14px', marginBottom: '16px', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold', textTransform: 'uppercase' }}>
+               ⚠ AI-GENERATED ANALYSIS — REVIEW BEFORE APPLYING TO PRODUCTION SYSTEMS
              </div>
              <pre style={{ margin: 0, padding: '16px', backgroundColor: '#111', border: '1px solid #222', fontSize: '12px', color: '#ccc', overflow: 'hidden', whiteSpace: 'pre-wrap' }}>
                {results.remediation.config_diff || 'No specific config remediation provided.'}

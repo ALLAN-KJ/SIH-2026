@@ -42,6 +42,21 @@ export const SEV_MAP: Record<string, Sev> = {
     bg:     'var(--color-surface)',
     border: 'var(--color-border)',
   },
+  High: {
+    fg:     'var(--color-weak)',
+    bg:     'var(--color-weak-muted)',
+    border: 'var(--color-weak-border)',
+  },
+  Medium: {
+    fg:     'var(--color-mod)',
+    bg:     'var(--color-mod-muted)',
+    border: 'var(--color-mod-border)',
+  },
+  Low: {
+    fg:     'var(--color-strong)',
+    bg:     'var(--color-strong-muted)',
+    border: 'var(--color-strong-border)',
+  },
 };
 
 export const DEFAULT_SEV: Sev = {

@@ -16,9 +16,9 @@
 
 @theme {
   /* ── Fonts ── */
-  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, 'Consolas', monospace;
-  --font-heading: 'Satoshi', 'Geist', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', 'Fira Code', ui-monospace, 'Consolas', monospace;
+  --font-heading: 'Fira Code', 'JetBrains Mono', ui-monospace, monospace;
 
   /* ── Type Scale (modular, 1.25 ratio from 14px base) ── */
   --text-xs: 11px;
@@ -79,8 +79,9 @@
 
   /* ── Severity: WCAG AA verified against #141416 ── */
   --color-crit:        #F87171;
-  --color-crit-muted:  rgba(248,113,113,0.08);
-  --color-crit-border: rgba(248,113,113,0.18);
+  --color-crit-muted:  rgba(248,113,113,0.12);
+  --color-crit-border: rgba(248,113,113,0.22);
+  --color-crit-subtle: rgba(248,113,113,0.06);
 
   --color-weak:        #FB923C;
   --color-weak-muted:  rgba(251,146,60,0.08);
@@ -214,19 +215,25 @@
   }
 }
 
-/* ── Print Styles (Phase 5 Export) ── */
+/* ── Print Styles ──
+   IMPORTANT: Do NOT strip severity colors — they are the primary
+   information-bearing signal in the report. Only decorative surfaces
+   (backgrounds, shadows) are neutralised for paper/print.
+── */
 @media print {
   body {
     background-color: white !important;
-    color: black !important;
   }
-  * {
-    color: black !important;
+  *:not([style*="color: var(--color-crit)"]):not([style*="color: var(--color-weak)"]):not([style*="color: var(--color-mod)"]):not([style*="color: var(--color-strong)"]) {
     background-color: transparent !important;
-    border-color: #ddd !important;
     box-shadow: none !important;
   }
-  header, footer, button {
+  /* Preserve severity foreground colors — these carry meaning */
+  [style*="color: var(--color-crit)"] { color: #dc2626 !important; }
+  [style*="color: var(--color-weak)"] { color: #c2410c !important; }
+  [style*="color: var(--color-mod)"]  { color: #92400e !important; }
+  [style*="color: var(--color-strong)"] { color: #047857 !important; }
+  header > button, footer > button, button.report-hide-print {
     display: none !important;
   }
   .results-grid {

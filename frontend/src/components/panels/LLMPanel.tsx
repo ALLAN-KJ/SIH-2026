@@ -10,7 +10,7 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
   const isFallback = remediation.explanation.includes("Remediation unavailable");
   return (
   <Card id="panel-llm" className="panel-secondary" style={isFallback ? { borderColor: 'var(--color-weak-border)' } : {}}>
-    <CardHeader title="Configuration Compliance" subtitle={isFallback ? "Fallback Configuration Loaded" : "Security Assessment Report"} />
+    <CardHeader title="Configuration Compliance" subtitle={isFallback ? "Fallback Configuration Loaded" : "Configuration Compliance Report"} />
     {/* Persistent disclaimer — never removed */}
     <div style={{
       padding: '8px 24px',
@@ -102,7 +102,7 @@ export const LLMPanel = ({ remediation, onUseFallback, hasFallback }: {
           </p>
 
           <div style={{ marginTop: '16px' }}>
-            <Overline>Remediated Configuration</Overline>
+            <Overline>NIST SP 800-77 Compliant Configuration</Overline>
             <div style={{
               marginTop: '8px',
               border: '1px solid var(--color-border-dim)',

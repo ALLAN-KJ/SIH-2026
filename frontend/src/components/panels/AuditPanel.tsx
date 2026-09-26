@@ -9,7 +9,7 @@ export const AuditPanel = ({ audit }: { audit: AuditLogResponse }) => (
       {audit.tampered ? (
         <div style={{
           padding: '12px 16px',
-          backgroundColor: 'rgba(255, 60, 60, 0.1)',
+          backgroundColor: 'var(--color-crit-muted)',
           border: '1px solid var(--color-crit)',
           borderRadius: '4px',
           display: 'flex',
