@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import App from './App';
 import { Home } from './Home';
 
@@ -11,5 +11,5 @@ export default function AppShell() {
     return <Home onNavigate={(mode) => setRoute(mode)} />;
   }
 
-  return <App initialMode={route !== 'home' ? route : 'passive'} onGoHome={() => setRoute('home')} />;
+  return <App initialMode={route} onGoHome={() => setRoute('home')} />;
 }

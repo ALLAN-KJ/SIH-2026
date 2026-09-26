@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { UploadSimple, Target, Play, ArrowRight, Desktop } from '@phosphor-icons/react';
+import { useState } from 'react';
+import { UploadSimple, Target, Play, ArrowRight } from '@phosphor-icons/react';
 
 interface HomeProps {
   onNavigate: (mode: 'passive' | 'active' | 'demo') => void;
