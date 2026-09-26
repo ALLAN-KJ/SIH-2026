@@ -1,12 +1,15 @@
-/*
- * AppShell — Single-page entry point (Phase 2/3 restructure).
- *
- * The previous Dashboard/Console two-route split has been removed.
- * The analyzer loads directly as a single page from App.tsx.
- * No hash routing is required.
- */
+import React, { useState } from 'react';
 import App from './App';
+import { Home } from './Home';
+
+export type RouteMode = 'home' | 'passive' | 'active' | 'demo';
 
 export default function AppShell() {
-  return <App />;
+  const [route, setRoute] = useState<RouteMode>('home');
+
+  if (route === 'home') {
+    return <Home onNavigate={(mode) => setRoute(mode)} />;
+  }
+
+  return <App initialMode={route !== 'home' ? route : 'passive'} onGoHome={() => setRoute('home')} />;
 }

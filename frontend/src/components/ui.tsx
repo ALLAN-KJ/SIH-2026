@@ -57,6 +57,21 @@ export const SEV_MAP: Record<string, Sev> = {
     bg:     'var(--color-strong-muted)',
     border: 'var(--color-strong-border)',
   },
+  'Classically Vulnerable': {
+    fg:     'var(--color-crit)',
+    bg:     'var(--color-crit-muted)',
+    border: 'var(--color-crit-border)',
+  },
+  'Quantum-Safe': {
+    fg:     'var(--color-strong)',
+    bg:     'var(--color-strong-muted)',
+    border: 'var(--color-strong-border)',
+  },
+  'Unrecognized': {
+    fg:     'var(--color-mod)',
+    bg:     'var(--color-mod-muted)',
+    border: 'var(--color-mod-border)',
+  },
 };
 
 export const DEFAULT_SEV: Sev = {

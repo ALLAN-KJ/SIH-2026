@@ -12,8 +12,13 @@ import { PipelineWalkthrough } from './components/PipelineWalkthrough';
 import { ReportExport } from './components/ReportExport';
 import {
   X, UploadSimple, Target, ArrowCounterClockwise, Play,
-  CircleNotch, CheckCircle, Warning,
+  CircleNotch, CheckCircle, Warning, Desktop
 } from '@phosphor-icons/react';
+
+export interface AppProps {
+  initialMode?: 'passive' | 'active' | 'demo';
+  onGoHome?: () => void;
+}
 
 export interface AnalysisMetadata {
   sourceName: string;
@@ -36,8 +41,8 @@ const PIPELINE_STEPS = [
 type AnalysisMode = 'passive' | 'active';
 
 const ModeTab = ({
-  label, icon, active, onClick,
-}: { label: string; icon: React.ReactNode; active: boolean; onClick: () => void }) => (
+  label, icon, active, onClick, style
+}: { label: string; icon: React.ReactNode; active: boolean; onClick: () => void; style?: React.CSSProperties }) => (
   <button
     onClick={onClick}
     className="transition-default"
@@ -55,6 +60,7 @@ const ModeTab = ({
       fontSize: 'var(--text-sm)',
       fontWeight: 500,
       fontFamily: 'var(--font-sans)',
+      ...style,
     }}
   >
     {icon}
@@ -526,11 +532,11 @@ const ResultsSummaryBar = ({
    ═══════════════════════════════════════════════════════ */
 gsap.registerPlugin(ScrollTrigger);
 
-export default function App() {
+export default function App({ initialMode = 'passive', onGoHome }: AppProps) {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
-  const [mode, setMode] = useState<AnalysisMode>('passive');
-  const [isWalkthroughOpen, setIsWalkthroughOpen] = useState(false);
+  const [mode, setMode] = useState<AnalysisMode>(initialMode === 'demo' ? 'passive' : initialMode);
+  const [isWalkthroughOpen, setIsWalkthroughOpen] = useState(initialMode === 'demo');
   const [error, setError] = useState<string | null>(null);
   const [lastIntent, setLastIntent] = useState<(() => void) | null>(null);
   const [results, setResults] = useState<AnalysisResult | null>(null);
@@ -618,8 +624,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResults(null);
-    const retryFn = () => loadSample(filename);
-    setLastIntent(() => retryFn);
+    setLastIntent(() => () => loadSample(filename));
     try {
       const resp = await fetch(`/${filename}`);
       if (!resp.ok) throw new Error(`Failed to fetch sample: ${filename}`);
@@ -741,18 +746,27 @@ export default function App() {
           {!results && (
             <div style={{ maxWidth: '680px', margin: '0 auto' }}>
               {/* Mode tabs */}
-              <div style={{ display: 'flex', gap: '0', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', gap: '0', marginBottom: '24px', width: '100%' }}>
                 <ModeTab
                   label="Passive PCAP Analysis"
                   icon={<UploadSimple size={15} weight="bold" />}
                   active={mode === 'passive'}
                   onClick={() => setMode('passive')}
+                  style={{ flex: 1, justifyContent: 'center' }}
+                />
+                <ModeTab
+                  label="Homepage"
+                  icon={<Desktop size={15} weight="bold" />}
+                  active={false}
+                  onClick={() => onGoHome?.()}
+                  style={{ flex: 1, justifyContent: 'center' }}
                 />
                 <ModeTab
                   label="Active IKE Probe"
                   icon={<Target size={15} weight="bold" />}
                   active={mode === 'active'}
                   onClick={() => setMode('active')}
+                  style={{ flex: 1, justifyContent: 'center' }}
                 />
               </div>
 

@@ -56,18 +56,6 @@ export const PipelineWalkthrough = ({ isOpen, onClose, results }: Props) => {
     }
   }, [currentStep, isOpen]);
 
-  /* Keyboard navigation */
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight' && canProceed) handleNext();
-      if (e.key === 'ArrowLeft' && currentStep > 0) handlePrev();
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [isOpen, currentStep, onClose]);
-
   /* Auto-load sample when entering step 1 if no results yet */
   useEffect(() => {
     if (isOpen && currentStep === 1 && !activeResults && !isLoadingSample) {
@@ -88,7 +76,7 @@ export const PipelineWalkthrough = ({ isOpen, onClose, results }: Props) => {
         }
       })();
     }
-  }, [isOpen, currentStep, activeResults]);
+  }, [isOpen, currentStep, activeResults, isLoadingSample]);
 
   const STEPS = [
     {
@@ -307,11 +295,23 @@ export const PipelineWalkthrough = ({ isOpen, onClose, results }: Props) => {
   const handleNext = useCallback(() => {
     if (currentStep < STEPS.length - 1) setCurrentStep((p) => p + 1);
     else onClose();
-  }, [currentStep, onClose]);
+  }, [currentStep, onClose, STEPS.length]);
 
   const handlePrev = useCallback(() => {
     if (currentStep > 0) setCurrentStep((p) => p - 1);
   }, [currentStep]);
+
+  /* Keyboard navigation */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!isOpen) return;
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight' && canProceed) handleNext();
+      if (e.key === 'ArrowLeft' && currentStep > 0) handlePrev();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen, currentStep, onClose, canProceed, handleNext, handlePrev]);
 
   if (!isOpen) return null;
 
