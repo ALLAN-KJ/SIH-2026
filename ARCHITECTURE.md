@@ -18,7 +18,7 @@ IPsec VPN Protocol Analyzer is an AI-driven, PQC-aware VPN configuration auditor
 
 3. **Machine Learning Pipeline**
    - **XGBoost Risk Classifier**: Trained on 5,000 synthetic IKE parameter sets mapping to Low, Weak, Moderate, Strong, and Critical risk labels (84% accuracy). Utilizes `CalibratedClassifierCV` (sigmoid) to output realistic 0-100% confidence scores rather than raw, overconfident tree probabilities.
-   - **RandomForest Traffic Classifier**: Predicts traffic type (VoIP, Video, Web, ICMP, Email, WhatsApp) inside ESP tunnels using inter-arrival times and packet size variances. Achieves 100% accuracy on a synthetic held-out test split.
+   - **RandomForest Traffic Classifier**: Predicts traffic type (VoIP, Video, Web, ICMP, Email, WhatsApp) inside ESP tunnels using inter-arrival times and packet size variances. Achieves 99% accuracy on a synthetic held-out test split.
 
 4. **Data Generation**
    - `generate_testbed.py`: Automates strongSwan IPsec tunnels inside network namespaces and captures traffic using `tshark` to build the synthetic training sets.

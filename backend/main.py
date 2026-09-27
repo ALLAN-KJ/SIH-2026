@@ -109,8 +109,8 @@ async def upload_pcap(request: Request, file: UploadFile = File(...)):
     """Accepts a PCAP file, parses IKE negotiations, and returns IPsecRequest schema."""
     check_rate_limit(request, limit=10, window=60)
     
-    if not file.filename.endswith('.pcap'):
-        raise HTTPException(status_code=400, detail="Must be a .pcap file")
+    if not (file.filename.endswith('.pcap') or file.filename.endswith('.pcapng')):
+        raise HTTPException(status_code=400, detail="Must be a .pcap or .pcapng file")
         
     # Read file and enforce size limit (5MB)
     content = await file.read()
@@ -121,7 +121,8 @@ async def upload_pcap(request: Request, file: UploadFile = File(...)):
     if not content.startswith(b'\xd4\xc3\xb2\xa1') and not content.startswith(b'\xa1\xb2\xc3\xd4') and not content.startswith(b'\x0a\x0d\x0d\x0a'):
         raise HTTPException(status_code=400, detail="Invalid file signature. Not a recognized PCAP format.")
         
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pcap") as tmp:
+    file_suffix = ".pcapng" if file.filename.endswith('.pcapng') else ".pcap"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file_suffix) as tmp:
         tmp.write(content)
         tmp_path = tmp.name
         

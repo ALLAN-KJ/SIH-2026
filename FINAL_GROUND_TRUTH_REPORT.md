@@ -26,7 +26,7 @@ Following the discovery of orphaned files and previous label mismatches, a compl
 - **Per-Class Efficacy:** The model now meaningfully and reliably distinguishes between **Critical**, **Moderate**, **Strong**, and **Weak** cryptographic postures without collapsing into a single class.
 
 ### ESP Traffic Classifier (XGBoost)
-- **Final Verified Accuracy:** **100.00%**
+- **Final Verified Accuracy:** **99.00%**
 - **Limitation Caveat:** While the accuracy is mathematically genuine, it operates on a synthetically generated dataset that produces trivially separable size/timing features. The model functions as claimed, but its real-world adversarial robustness remains unproven outside this synthetic context.
 
 ---

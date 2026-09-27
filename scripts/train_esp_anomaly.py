@@ -5,8 +5,8 @@ import numpy as np
 from sklearn.ensemble import IsolationForest, RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
-
-from esp_traffic_classifier import extract_esp_features
+from sklearn.model_selection import train_test_split
+from backend.services.esp_traffic_classifier import extract_esp_features
 
 def train_detectors():
     print("--- TRAINING ESP MODELS (ISOLATION FOREST + RANDOM FOREST) ---")
@@ -50,26 +50,28 @@ def train_detectors():
         print("ERROR: No features extracted. Cannot train.")
         return
         
-    X_train = np.array(X)
+    X_np = np.array(X)
+    le = LabelEncoder()
+    y_encoded = le.fit_transform(y_labels)
+
+    # Use a held-out test set to derive a real accuracy number
+    X_train, X_test, y_train, y_test = train_test_split(X_np, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded)
     
     # Train Isolation Forest
     clf_anomaly = IsolationForest(n_estimators=100, contamination=0.1, random_state=42)
     clf_anomaly.fit(X_train)
     
     # Train Random Forest Classifier
-    le = LabelEncoder()
-    y_encoded = le.fit_transform(y_labels)
-    
     clf_rf = RandomForestClassifier(n_estimators=100, random_state=42)
-    clf_rf.fit(X_train, y_encoded)
+    clf_rf.fit(X_train, y_train)
     
-    # Print real accuracy report
-    y_pred = clf_rf.predict(X_train)
-    print("\n--- RANDOM FOREST CLASSIFIER EVALUATION ---")
-    print(classification_report(y_encoded, y_pred, target_names=le.classes_))
+    # Evaluate on the held-out TEST set
+    y_pred = clf_rf.predict(X_test)
+    print("\n--- RANDOM FOREST CLASSIFIER EVALUATION (HELD-OUT TEST SET) ---")
+    print(classification_report(y_test, y_pred, target_names=le.classes_))
     
     # Save the models
-    model_dir = os.path.join(base_dir, 'models')
+    model_dir = os.path.join(base_dir, '..', 'backend', 'models')
     os.makedirs(model_dir, exist_ok=True)
     
     anomaly_path = os.path.join(model_dir, 'esp_anomaly_model.joblib')

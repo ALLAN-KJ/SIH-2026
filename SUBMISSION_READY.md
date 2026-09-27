@@ -1,7 +1,7 @@
 # IPsec VPN Protocol Analyzer Submission Checklist
 
 - [x] **Working software prototype** — Verified. Localhost React frontend connects to FastAPI backend smoothly.
-- [x] **AI classification engine** — Verified. XGBoost Risk Engine achieves 84% accuracy across 5 classes (Critical, Low, Moderate, Strong, Weak) based on 5,000 synthetic configurations. RandomForest ESP classifier achieves 100% accuracy on synthetic distributions.
+- [x] **AI classification engine** — Verified. XGBoost Risk Engine achieves 84% accuracy across 5 classes (Critical, Low, Moderate, Strong, Weak) based on 5,000 synthetic configurations. RandomForest ESP classifier achieves 99% accuracy on synthetic distributions.
 - [x] **Interactive dashboard** — Verified. GSAP-animated dashboard accurately renders SHAP transparency, Risk Verdicts, and PQC metrics without collapsing to single-class errors.
 - [x] **Security assessment report** — Verified. Dual Executive and Technical PDF exports successfully generate via html2canvas/jsPDF.
 - [x] **Demonstration video** — Verified. A concise, 90-second focused recording demonstrating the precise scenarios (96.04 / 51.87 / 5.84) with AI remediation and PQC features is saved as `demo_video` in artifacts.

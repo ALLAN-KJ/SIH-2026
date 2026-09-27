@@ -1,6 +1,6 @@
 # AI-Powered IPsec VPN Protocol Analyzer and Security Assessment Framework
 
-IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN negotiation captures (PCAP), parses cryptographic parameters, and evaluates the configuration's security posture using an XGBoost risk classifier. It natively integrates SHAP for explainable scoring, checks against NIST FIPS 203 for Post-Quantum Cryptography (PQC) readiness, and leverages an LLM to generate compliant remediation configurations.
+IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN negotiation captures (PCAP and PCAPNG), parses cryptographic parameters, and evaluates the configuration's security posture using an XGBoost risk classifier. It natively integrates SHAP for explainable scoring, checks against NIST FIPS 203 for Post-Quantum Cryptography (PQC) readiness, and leverages an LLM to generate compliant remediation configurations.
 
 **Live Deployment (Demo):**
 - **Frontend:** https://sih-2026-frontend-eight.vercel.app
@@ -17,7 +17,7 @@ IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN
 *   **Metadata Exposure Detection:** Identifies and flags leakage of sensitive configuration metadata from IPsec negotiations.
 *   **AH Header Parsing:** Natively extracts SPI, Sequence Number, and ICV Length from Authentication Header packets via Scapy.
 *   **Tunnel/Transport & IPv4/IPv6 Detection:** Automatically parses and differentiates between IPsec Tunnel and Transport modes, as well as IPv4/IPv6 traffic.
-*   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP is unavailable.
+*   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP/PCAPNG captures are unavailable.
 *   **Configuration compliance:** Auto-generates vendor-specific (Cisco IOS) CLI configuration fixes to remediate identified vulnerabilities using robust regex-based extraction.
 *   **Tamper-Evident Audit Trail:** Merkle-tree based cryptographic logging for compliance and forensic integrity.
 

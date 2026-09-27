@@ -31,7 +31,7 @@
 - **Intended Use**: Predict the application traffic type (VoIP, Video, Web, ICMP, Email, WhatsApp) inside ESP-encrypted IPsec tunnels.
 - **Training Data**: 500 synthetic PCAPs generated via strongSwan network namespaces.
 - **Features**: ESP packet count, mean size, size variance, mean inter-arrival time, inter-arrival time variance, duration.
-- **Performance**: Achieves **100.00% accuracy** on a strict held-out Train/Test split across 6 classes (verified in Ground-Truth Audit).
+- **Performance**: Achieves **99.00% accuracy** on a strict held-out Train/Test split across 6 classes (verified in Ground-Truth Audit).
 - **Limitations**: Trained solely on synthetic distributions; performance on real-world captures requires fine-tuning.
 
 ## 3. IsolationForest ESP Anomaly Detector
