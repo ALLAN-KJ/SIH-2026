@@ -32,15 +32,14 @@ from backend.services.active_probe import router as active_probe_router
 app = FastAPI(title="IPsec VPN Protocol Analyzer API", description="AI-Powered IPsec VPN Protocol Analyzer and Security Assessment Framework")
 
 CORS_ORIGIN = os.environ.get("CORS_ORIGIN")
-if not CORS_ORIGIN or CORS_ORIGIN == "*":
-    print("WARNING: CORS_ORIGIN is unset or set to wildcard. Restricting to http://localhost:5173 for security.")
-    allow_origins = ["http://localhost:5173"]
-else:
-    allow_origins = [origin.strip() for origin in CORS_ORIGIN.split(",")]
+allow_origins = ["http://localhost:5173", "http://localhost:3000"]
+if CORS_ORIGIN and CORS_ORIGIN != "*":
+    allow_origins.extend([origin.strip() for origin in CORS_ORIGIN.split(",")])
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
