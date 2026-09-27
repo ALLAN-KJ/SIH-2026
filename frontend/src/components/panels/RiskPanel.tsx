@@ -10,13 +10,15 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
   const scoreRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (scoreRef.current && !prefersReducedMotion()) {
+    if (scoreRef.current && !prefersReducedMotion() && risk.risk_score > 0) {
       const target = Math.round(risk.risk_score * 10) / 10;
+      // Start from half the value so there's motion without a jarring 0 flash
+      const startFrom = Math.max(0, target * 0.4);
       gsap.fromTo(scoreRef.current,
-        { textContent: '0' },
+        { textContent: startFrom.toFixed(1) },
         {
           textContent: target,
-          duration: 0.8,
+          duration: 0.6,
           ease: 'power2.out',
           snap: { textContent: 0.1 },
           onUpdate() {

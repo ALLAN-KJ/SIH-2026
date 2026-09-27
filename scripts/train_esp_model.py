@@ -10,7 +10,7 @@ import sys
 
 # Add backend to path to use extractor
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
-from backend.esp_traffic_classifier import extract_esp_features
+from backend.services.esp_traffic_classifier import extract_esp_features
 
 DATASET_DIR = os.path.join(os.path.dirname(__file__), "..", "dataset")
 MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "backend", "models")

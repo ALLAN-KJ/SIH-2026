@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import joblib
 
-from backend.esp_traffic_classifier import extract_esp_features
+from backend.services.esp_traffic_classifier import extract_esp_features
 from backend.services.risk_engine import load_models
 
 def audit_esp_model():

@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /*
  * ═══════════════════════════════════════════════════════════════
@@ -94,6 +95,14 @@
   --color-strong:        #34D399;
   --color-strong-muted:  rgba(52,211,153,0.08);
   --color-strong-border: rgba(52,211,153,0.18);
+
+  /* ── Surface elevation for interactive cards ── */
+  --color-card-hover:  #1C1C1F;
+  --color-card-active: #222225;
+
+  /* ── Glow tokens (neon trace for accent elements) ── */
+  --glow-accent:  0 0 16px rgba(45,212,191,0.18);
+  --glow-crit:    0 0 14px rgba(248,113,113,0.15);
 }
 
 /* ── Base Layer ── */
@@ -106,6 +115,8 @@
     font-size: var(--text-base);
     line-height: var(--text-base--line-height);
     background-color: var(--color-ground);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(45,212,191,0.06) 0%, transparent 70%);
     color: var(--color-text-1);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -197,6 +208,45 @@
   .panel-hidden {
     opacity: 0;
     transform: translateY(16px);
+  }
+
+  /* ── Home mode card hover ── */
+  .home-card {
+    transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+  .home-card:hover:not(:disabled) {
+    background-color: var(--color-card-hover) !important;
+    transform: translateY(-1px);
+  }
+  .home-card:active:not(:disabled) {
+    background-color: var(--color-card-active) !important;
+    transform: translateY(0);
+  }
+
+  /* ── Scenario card equal-height fix ── */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    align-items: stretch;
+  }
+  .scenario-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* ── Accent glow on focused interactive elements ── */
+  .glow-on-focus:focus-visible {
+    box-shadow: var(--glow-accent);
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* ── Subtle neon accent bar for active tabs ── */
+  .tab-active-glow {
+    box-shadow: 0 2px 0 0 var(--color-accent) inset, var(--glow-accent);
   }
 }
 

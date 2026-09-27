@@ -2,8 +2,8 @@ import os
 import sys
 import pandas as pd
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from backend.ike_parser import parse_ike_negotiation
-from backend.esp_traffic_classifier import predict_traffic_type
+from backend.services.ike_parser import parse_ike_negotiation
+from backend.services.esp_traffic_classifier import detect_esp_anomaly
 
 REAL_DIR = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'real_captures')
 LABELS_FILE = os.path.join(os.path.dirname(__file__), '..', 'dataset', 'labels.csv')
@@ -33,8 +33,8 @@ def test_real():
             res = parse_ike_negotiation(pcap_path)
             esp_features = res.get("esp_features")
             if esp_features:
-                predicted = predict_traffic_type(esp_features)
-                predicted_label = predicted.get('predicted_traffic_type') if isinstance(predicted, dict) else predicted
+                predicted = detect_esp_anomaly(esp_features)
+                predicted_label = predicted.get('traffic_type') if isinstance(predicted, dict) else predicted
                 actual = row['traffic_type']
                 print(f"{row['pcap_file']} -> Predicted: {predicted_label} (Dict: {predicted}) | Actual: {actual}")
                 if predicted_label == actual:

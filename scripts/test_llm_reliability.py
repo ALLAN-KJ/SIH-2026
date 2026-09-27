@@ -8,7 +8,7 @@ load_dotenv()
 # Add backend to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from backend.llm_copilot import remediate_ipsec, RemediationRequest
+from backend.services.llm_copilot import remediate_ipsec, RemediationRequest
 from fastapi import Request
 
 async def main():

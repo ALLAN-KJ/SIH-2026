@@ -23,11 +23,11 @@ from typing import List, Optional
 
 from backend.schemas import IPsecRequest, AssessResponse
 from backend.services.risk_engine import evaluate_risk
-from backend.llm_copilot import router as llm_router
-from backend.pqc_scorer import router as pqc_router
-from backend.audit_trail import router as audit_router
-from backend.ike_parser import parse_ike_negotiation
-from backend.active_probe import router as active_probe_router
+from backend.services.llm_copilot import router as llm_router
+from backend.services.pqc_scorer import router as pqc_router
+from backend.services.audit_trail import router as audit_router
+from backend.services.ike_parser import parse_ike_negotiation
+from backend.services.active_probe import router as active_probe_router
 
 app = FastAPI(title="IPsec VPN Protocol Analyzer API", description="AI-Powered IPsec VPN Protocol Analyzer and Security Assessment Framework")
 

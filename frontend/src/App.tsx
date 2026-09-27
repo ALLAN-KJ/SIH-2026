@@ -45,7 +45,7 @@ const ModeTab = ({
 }: { label: string; icon: React.ReactNode; active: boolean; onClick: () => void; style?: React.CSSProperties }) => (
   <button
     onClick={onClick}
-    className="transition-default"
+    className={`transition-default${active ? ' tab-active-glow' : ''}`}
     aria-pressed={active}
     style={{
       display: 'flex',
@@ -106,7 +106,7 @@ const SCENARIOS = [
   {
     file: 'scenario_moderate_transition.pcap',
     title: 'Moderate Risk',
-    desc: 'IKEv2 · AES-128 · Weak DH group',
+    desc: 'IKEv2 · AES-128 · Weak DH',
     sevLabel: 'Moderate' as const,
   },
   {
@@ -131,17 +131,14 @@ const ScenarioCard = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="transition-default"
+      className="transition-default scenario-card"
       style={{
         textAlign: 'left',
-        padding: '12px 16px',
+        padding: '14px 16px',
         border: '1px solid var(--color-border-dim)',
         borderLeft: `3px solid ${s.fg}`,
         backgroundColor: 'transparent',
         cursor: disabled ? 'not-allowed' : 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '4px',
         opacity: disabled ? 0.5 : 1,
         width: '100%',
       }}
@@ -152,10 +149,23 @@ const ScenarioCard = ({
         (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
       }}
     >
-      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: s.fg, fontFamily: 'var(--font-heading)' }}>
+      <span style={{
+        fontSize: 'var(--text-sm)',
+        fontWeight: 600,
+        color: s.fg,
+        fontFamily: 'var(--font-heading)',
+        display: 'block',
+        marginBottom: '4px',
+      }}>
         {scenario.title}
       </span>
-      <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)', fontFamily: 'var(--font-mono)' }}>
+      <span style={{
+        fontSize: 'var(--text-xs)',
+        color: 'var(--color-text-3)',
+        fontFamily: 'var(--font-mono)',
+        display: 'block',
+        lineHeight: 1.4,
+      }}>
         {scenario.desc}
       </span>
     </button>
@@ -253,7 +263,7 @@ const PassiveZone = ({
           }}>
             Or load a sample scenario
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+          <div className="scenario-grid">
             {SCENARIOS.map((s) => (
               <ScenarioCard key={s.file} scenario={s} onClick={() => loadSample(s.file)} disabled={loading} />
             ))}

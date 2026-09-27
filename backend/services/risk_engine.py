@@ -24,7 +24,7 @@ def load_models():
 # Call load_models at import time
 load_models()
 
-from backend.esp_traffic_classifier import detect_esp_anomaly
+from backend.services.esp_traffic_classifier import detect_esp_anomaly
 
 def evaluate_risk(request) -> AssessResponse:
     if not model or not model_calibrated:

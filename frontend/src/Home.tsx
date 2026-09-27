@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { UploadSimple, Target, Play, ArrowRight } from '@phosphor-icons/react';
+import { UploadSimple, Target, Play, ArrowRight, Circle } from '@phosphor-icons/react';
 
 interface HomeProps {
   onNavigate: (mode: 'passive' | 'active' | 'demo') => void;
 }
 
 export function Home({ onNavigate }: HomeProps) {
-  const [liveHealth, setLiveHealth] = useState(true);
+  const [liveHealth] = useState(true);
 
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#0a0a0a',
-      color: '#ffffff',
-      fontFamily: 'Inter, sans-serif',
+      backgroundColor: 'var(--color-ground)',
+      color: 'var(--color-text-1)',
+      fontFamily: 'var(--font-sans)',
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -22,164 +22,235 @@ export function Home({ onNavigate }: HomeProps) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        padding: '32px 48px',
+        padding: '28px 48px',
+        borderBottom: '1px solid var(--color-border-dim)',
       }}>
         <div style={{
-          fontFamily: 'Fira Code, monospace',
+          fontFamily: 'var(--font-heading)',
           fontWeight: 700,
-          fontSize: '18px',
+          fontSize: '16px',
           letterSpacing: '-0.02em',
+          color: 'var(--color-text-1)',
         }}>
           IPsec VPN Protocol Analyzer
         </div>
-        <button 
+        <button
           onClick={() => onNavigate('passive')}
+          className="home-card"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             backgroundColor: 'transparent',
-            color: '#a3a3a3',
-            border: '1px solid #333',
-            padding: '8px 16px',
-            fontSize: '14px',
+            color: 'var(--color-text-2)',
+            border: '1px solid var(--color-border)',
+            padding: '8px 18px',
+            fontSize: 'var(--text-sm)',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 500,
             cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = '#555';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#a3a3a3';
-            e.currentTarget.style.borderColor = '#333';
           }}
         >
-          Console <ArrowRight size={16} />
+          Console <ArrowRight size={15} />
         </button>
       </header>
 
       {/* Main Content */}
       <main style={{
         flex: 1,
-        padding: '48px',
+        padding: '64px 48px',
         maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
         display: 'grid',
-        gridTemplateColumns: '1fr 320px',
+        gridTemplateColumns: '1fr 300px',
         gap: '80px',
         alignItems: 'start',
       }}>
-        
+
         {/* Left Column */}
         <div>
-          <h1 style={{
-            fontSize: '36px',
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-            marginBottom: '16px',
-            marginTop: 0,
+          {/* Eyebrow label */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: 'var(--text-xs)',
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 500,
+            color: 'var(--color-accent)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: '20px',
+            padding: '4px 10px',
+            border: '1px solid rgba(45,212,191,0.25)',
+            backgroundColor: 'rgba(45,212,191,0.06)',
           }}>
-            Analyse IPsec VPN security.
-          </h1>
-          <p style={{
-            color: '#a3a3a3',
-            fontSize: '16px',
-            lineHeight: 1.6,
-            maxWidth: '560px',
-            marginBottom: '64px',
-          }}>
-            Upload a packet capture or probe a live target. Get a Security Score, cryptographic strength evaluation, configuration compliance recommendations, and a tamper-evident audit record.
-          </p>
-
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '16px' }}>
-            CHOOSE YOUR ANALYSIS MODE
+            <Circle size={6} weight="fill" />
+            SIH 2026 · PS 26160 · NTRO
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {/* Card 1 */}
+          <h1 style={{
+            fontSize: '42px',
+            fontWeight: 700,
+            letterSpacing: '-0.03em',
+            marginBottom: '16px',
+            marginTop: 0,
+            fontFamily: 'var(--font-heading)',
+            lineHeight: 1.1,
+            color: 'var(--color-text-1)',
+          }}>
+            Analyse IPsec VPN<br />security.
+          </h1>
+          <p style={{
+            color: 'var(--color-text-2)',
+            fontSize: 'var(--text-lg)',
+            lineHeight: 1.65,
+            maxWidth: '520px',
+            marginBottom: '56px',
+          }}>
+            Upload a packet capture or probe a live target. Get a Security Score,
+            cryptographic strength evaluation, configuration compliance
+            recommendations, and a tamper-evident audit record.
+          </p>
+
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            fontWeight: 600,
+            color: 'var(--color-text-3)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: '14px',
+            fontFamily: 'var(--font-heading)',
+          }}>
+            Choose your analysis mode
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {/* Card 1 — Upload PCAP */}
             <button
               onClick={() => onNavigate('passive')}
+              className="home-card"
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '20px',
-                padding: '24px',
+                padding: '22px 24px',
                 backgroundColor: 'transparent',
-                border: '1px solid #333',
+                border: '1px solid var(--color-border)',
                 textAlign: 'left',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s',
+                width: '100%',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#666'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = '#333'}
             >
-              <div style={{ color: '#d4d4d4', border: '1px solid #333', padding: '12px' }}>
-                <UploadSimple size={24} color="#eab308" />
+              <div style={{
+                color: 'var(--color-mod)',
+                border: '1px solid rgba(251,191,36,0.25)',
+                backgroundColor: 'rgba(251,191,36,0.06)',
+                padding: '10px',
+                flexShrink: 0,
+              }}>
+                <UploadSimple size={22} />
               </div>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
-                  Upload PCAP <ArrowRight size={16} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 600,
+                  color: 'var(--color-text-1)',
+                  marginBottom: '6px',
+                }}>
+                  Upload PCAP <ArrowRight size={15} />
                 </div>
-                <div style={{ fontSize: '13px', color: '#888' }}>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-3)' }}>
                   Drop a .pcap or .pcapng — offline analysis, no traffic sent
                 </div>
               </div>
             </button>
 
-            {/* Card 2 (Active state like reference image) */}
+            {/* Card 2 — Active Probe (warning state) */}
             <button
               onClick={() => onNavigate('active')}
+              className="home-card"
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '20px',
-                padding: '24px',
-                backgroundColor: 'rgba(234, 88, 12, 0.05)',
-                border: '1px solid #ea580c',
+                padding: '22px 24px',
+                backgroundColor: 'rgba(251,146,60,0.04)',
+                border: '1px solid var(--color-weak-border)',
                 textAlign: 'left',
                 cursor: 'pointer',
+                width: '100%',
               }}
             >
-              <div style={{ color: '#ea580c', border: '1px solid rgba(234, 88, 12, 0.3)', padding: '12px' }}>
-                <Target size={24} />
+              <div style={{
+                color: 'var(--color-weak)',
+                border: '1px solid var(--color-weak-border)',
+                backgroundColor: 'var(--color-weak-muted)',
+                padding: '10px',
+                flexShrink: 0,
+              }}>
+                <Target size={22} />
               </div>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
-                  Active Probe <ArrowRight size={16} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 600,
+                  color: 'var(--color-text-1)',
+                  marginBottom: '6px',
+                }}>
+                  Active Probe <ArrowRight size={15} />
                 </div>
-                <div style={{ fontSize: '13px', color: '#888' }}>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-3)' }}>
                   Send live IKE handshakes to a target you own and are authorized to test
                 </div>
               </div>
             </button>
 
-            {/* Card 3 */}
+            {/* Card 3 — Guided Demo */}
             <button
               onClick={() => onNavigate('demo')}
+              className="home-card"
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
                 gap: '20px',
-                padding: '24px',
+                padding: '22px 24px',
                 backgroundColor: 'transparent',
-                border: '1px solid #333',
+                border: '1px solid var(--color-border)',
                 textAlign: 'left',
                 cursor: 'pointer',
-                transition: 'border-color 0.2s',
+                width: '100%',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.borderColor = '#666'}
-              onMouseLeave={(e) => e.currentTarget.style.borderColor = '#333'}
             >
-              <div style={{ color: '#2dd4bf', border: '1px solid #333', padding: '12px' }}>
-                <Play size={24} />
+              <div style={{
+                color: 'var(--color-accent)',
+                border: '1px solid rgba(45,212,191,0.25)',
+                backgroundColor: 'rgba(45,212,191,0.05)',
+                padding: '10px',
+                flexShrink: 0,
+              }}>
+                <Play size={22} />
               </div>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: 600, color: '#fff', marginBottom: '8px' }}>
-                  Guided Demo <ArrowRight size={16} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: 'var(--text-base)',
+                  fontWeight: 600,
+                  color: 'var(--color-text-1)',
+                  marginBottom: '6px',
+                }}>
+                  Guided Demo <ArrowRight size={15} />
                 </div>
-                <div style={{ fontSize: '13px', color: '#888' }}>
+                <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-3)' }}>
                   Walk through a pre-loaded critical-risk scenario with step-by-step explanations
                 </div>
               </div>
@@ -187,86 +258,133 @@ export function Home({ onNavigate }: HomeProps) {
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* Right Column — System Status */}
         <div>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '16px' }}>
-            SYSTEM STATUS
-          </div>
-          
-          <div style={{ border: '1px solid #222', marginBottom: '16px' }}>
-            <div style={{ padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '12px' }}>BACKEND</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', fontWeight: 600 }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2dd4bf' }} />
-                Online
-              </div>
-            </div>
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            fontWeight: 600,
+            fontFamily: 'var(--font-heading)',
+            color: 'var(--color-text-3)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: '14px',
+          }}>
+            System Status
           </div>
 
-          <div style={{ border: '1px solid #222', marginBottom: '16px' }}>
-            <div style={{ padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '12px' }}>PROTOCOLS</div>
-              <div style={{ fontFamily: 'Fira Code, monospace', fontSize: '14px', color: '#d4d4d4' }}>
-                IKEv1 · IKEv2
+          {/* Status cards */}
+          {[
+            {
+              label: 'Backend',
+              value: 'Online',
+              isStatus: true,
+            },
+            {
+              label: 'Protocols',
+              value: 'IKEv1 · IKEv2',
+              mono: true,
+            },
+            {
+              label: 'Standard',
+              value: 'NIST SP 800-77r1',
+              mono: true,
+            },
+          ].map(({ label, value, isStatus, mono }) => (
+            <div key={label} style={{
+              border: '1px solid var(--color-border-dim)',
+              marginBottom: '10px',
+              backgroundColor: 'var(--color-raised)',
+            }}>
+              <div style={{ padding: '14px 16px' }}>
+                <div style={{
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  fontFamily: 'var(--font-heading)',
+                  color: 'var(--color-text-3)',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  marginBottom: '10px',
+                }}>
+                  {label}
+                </div>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: 'var(--text-sm)',
+                  fontFamily: mono ? 'var(--font-mono)' : 'var(--font-sans)',
+                  fontWeight: isStatus ? 600 : 400,
+                  color: isStatus ? 'var(--color-text-1)' : 'var(--color-text-2)',
+                }}>
+                  {isStatus && (
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: liveHealth ? 'var(--color-accent)' : 'var(--color-crit)',
+                      boxShadow: liveHealth ? '0 0 6px rgba(45,212,191,0.6)' : '0 0 6px rgba(248,113,113,0.6)',
+                      flexShrink: 0,
+                    }} />
+                  )}
+                  {value}
+                </div>
               </div>
             </div>
-          </div>
+          ))}
 
-          <div style={{ border: '1px solid #222', marginBottom: '48px' }}>
-            <div style={{ padding: '16px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '12px' }}>STANDARD</div>
-              <div style={{ fontFamily: 'Fira Code, monospace', fontSize: '14px', color: '#d4d4d4' }}>
-                NIST SP 800-77r1
-              </div>
-            </div>
-          </div>
+          {/* Separator */}
+          <div style={{ height: '1px', backgroundColor: 'var(--color-border-dim)', margin: '20px 0' }} />
 
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#666', letterSpacing: '0.05em', marginBottom: '16px' }}>
-            PREFERENCES
+          {/* Feature list */}
+          <div style={{
+            fontSize: 'var(--text-xs)',
+            fontWeight: 600,
+            fontFamily: 'var(--font-heading)',
+            color: 'var(--color-text-3)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: '14px',
+          }}>
+            Capabilities
           </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '14px', color: '#d4d4d4', marginBottom: '4px' }}>Live health polling</div>
-              <div style={{ fontSize: '12px', color: '#666' }}>Pings /health every 30 s</div>
-            </div>
-            <div 
-              onClick={() => setLiveHealth(!liveHealth)}
-              style={{
-                width: '36px',
-                height: '20px',
-                borderRadius: '10px',
-                backgroundColor: liveHealth ? '#2dd4bf' : '#333',
-                position: 'relative',
-                cursor: 'pointer',
-                transition: 'background-color 0.2s',
-              }}
-            >
+          {[
+            'XGBoost risk scoring + SHAP explainability',
+            'NIST SP 800-77r1 compliance output',
+            'Post-quantum readiness evaluation',
+            'Tamper-evident Merkle audit trail',
+            'IKEv1 & IKEv2 traffic classification',
+          ].map((cap) => (
+            <div key={cap} style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '8px',
+              marginBottom: '8px',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--color-text-2)',
+              lineHeight: 1.5,
+            }}>
               <div style={{
-                width: '16px',
-                height: '16px',
+                width: '4px',
+                height: '4px',
                 borderRadius: '50%',
-                backgroundColor: '#000',
-                position: 'absolute',
-                top: '2px',
-                left: liveHealth ? '18px' : '2px',
-                transition: 'left 0.2s',
+                backgroundColor: 'var(--color-accent)',
+                marginTop: '6px',
+                flexShrink: 0,
               }} />
+              {cap}
             </div>
-          </div>
-
+          ))}
         </div>
       </main>
 
       {/* Footer */}
       <footer style={{
-        padding: '32px',
+        padding: '24px 48px',
         textAlign: 'center',
-        borderTop: '1px solid #222',
-        marginTop: 'auto',
+        borderTop: '1px solid var(--color-border-dim)',
       }}>
-        <div style={{ fontSize: '12px', color: '#666' }}>
-          Built for SIH 2026 · Problem Statement 26160 · NTRO · Blockchain & Cybersecurity
+        <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-3)' }}>
+          Built for SIH 2026 · Problem Statement 26160 · NTRO · Blockchain &amp; Cybersecurity
         </div>
       </footer>
     </div>

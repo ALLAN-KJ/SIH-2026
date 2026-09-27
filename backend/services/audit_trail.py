@@ -9,7 +9,7 @@ from typing import List, Optional
 
 router = APIRouter()
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "data", "audit.db")
+DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "audit.db")
 
 # A global lock to ensure completely serialized access to the audit logic
 # (FastAPI def endpoints run in a threadpool)

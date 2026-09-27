@@ -1,6 +1,6 @@
 import sys
 sys.path.append('backend')
-from backend.esp_traffic_classifier import predict_traffic
+from backend.services.esp_traffic_classifier import predict_traffic
 import pandas as pd
 try:
     df = pd.read_csv('backend/data/ipsec_synthetic_dataset.csv')

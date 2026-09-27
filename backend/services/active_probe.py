@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from scapy.all import IP, UDP, sr1, wrpcap
 import scapy.contrib.ikev2 as ikev2
-from backend.ike_parser import parse_ike_negotiation
+from backend.services.ike_parser import parse_ike_negotiation
 from starlette.concurrency import run_in_threadpool
 
 router = APIRouter()

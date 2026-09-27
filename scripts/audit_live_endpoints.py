@@ -3,8 +3,8 @@ import json
 import time
 import os
 
-from backend.llm_copilot import validate_config
-from backend.pqc_scorer import evaluate_pqc_readiness, PQCRequest
+from backend.services.llm_copilot import validate_config
+from backend.services.pqc_scorer import evaluate_pqc_readiness, PQCRequest
 
 def live_verification():
     print("--- PART 3: LIVE ENDPOINT VERIFICATION ---")

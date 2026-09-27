@@ -1,5 +1,5 @@
 import pytest
-from backend.ike_parser import parse_ike_negotiation
+from backend.services.ike_parser import parse_ike_negotiation
 from scapy.all import wrpcap, Ether, IP, UDP, Raw
 import os
 

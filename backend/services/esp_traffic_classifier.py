@@ -4,8 +4,8 @@ from scapy.all import rdpcap
 from scapy.layers.ipsec import ESP
 import joblib
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "esp_anomaly_model.joblib")
-CLASSIFIER_PATH = os.path.join(os.path.dirname(__file__), "models", "esp_classifier_model.joblib")
+MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "esp_anomaly_model.joblib")
+CLASSIFIER_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "esp_classifier_model.joblib")
 
 def extract_esp_features(pcap_path: str) -> dict:
     if not os.path.exists(pcap_path):

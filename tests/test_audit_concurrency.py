@@ -4,7 +4,7 @@ import os
 import concurrent.futures
 from fastapi.testclient import TestClient
 from backend.main import app
-import backend.audit_trail as audit_trail
+import backend.services.audit_trail as audit_trail
 
 # Remove any existing DB before test to ensure clean state
 if os.path.exists(audit_trail.DB_PATH):
