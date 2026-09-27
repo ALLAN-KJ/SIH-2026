@@ -58,7 +58,7 @@ export function Home({ onNavigate }: HomeProps) {
       {/* Main Content */}
       <main style={{
         flex: 1,
-        padding: '64px 48px',
+        padding: '32px 48px',
         maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
@@ -70,25 +70,6 @@ export function Home({ onNavigate }: HomeProps) {
 
         {/* Left Column */}
         <div>
-          {/* Eyebrow label */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: 'var(--text-xs)',
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 500,
-            color: 'var(--color-accent)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            marginBottom: '20px',
-            padding: '4px 10px',
-            border: '1px solid rgba(45,212,191,0.25)',
-            backgroundColor: 'rgba(45,212,191,0.06)',
-          }}>
-            <Circle size={6} weight="fill" />
-            SIH 2026 · PS 26160 · NTRO
-          </div>
 
           <h1 style={{
             fontSize: '42px',
@@ -107,7 +88,7 @@ export function Home({ onNavigate }: HomeProps) {
             fontSize: 'var(--text-lg)',
             lineHeight: 1.65,
             maxWidth: '520px',
-            marginBottom: '56px',
+            marginBottom: '32px',
           }}>
             Upload a packet capture or probe a live target. Get a Security Score,
             cryptographic strength evaluation, configuration compliance
