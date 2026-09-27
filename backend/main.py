@@ -34,11 +34,13 @@ app = FastAPI(title="IPsec VPN Protocol Analyzer API", description="AI-Powered I
 CORS_ORIGIN = os.environ.get("CORS_ORIGIN")
 if not CORS_ORIGIN or CORS_ORIGIN == "*":
     print("WARNING: CORS_ORIGIN is unset or set to wildcard. Restricting to http://localhost:5173 for security.")
-    CORS_ORIGIN = "http://localhost:5173"
+    allow_origins = ["http://localhost:5173"]
+else:
+    allow_origins = [origin.strip() for origin in CORS_ORIGIN.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[CORS_ORIGIN],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
