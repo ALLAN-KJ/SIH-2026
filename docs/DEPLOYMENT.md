@@ -46,13 +46,12 @@ We recommend **Render** for the backend because it natively supports Python and 
 
 Render's free tier automatically spins down web services after 15 minutes of inactivity. When the next request comes in, the backend experiences a "cold start" which can take 30–60 seconds, leading to a poor demo experience.
 
-To mitigate this during active hours, set up a free uptime monitor to ping the backend:
+To mitigate this during active hours, we have configured a GitHub Actions workflow (`.github/workflows/render-keepalive.yml`) to automatically ping the `/health` endpoint every 10 minutes.
 
-1. **Sign up for a free monitor:** Use a service like [UptimeRobot](https://uptimerobot.com/) or [cron-job.org](https://cron-job.org/).
-2. **Add your monitor:**
-   - **URL:** Your deployed backend URL + `/health` (e.g., `https://ipsec-sentinel-backend.onrender.com/health`)
-   - **Interval:** Every 10 or 14 minutes.
-3. **Important Note:** This is a *mitigation*, not a guarantee. Render may still occasionally spin down the container, and free monitors sometimes skip checks. However, this will drastically reduce cold starts during the periods the pinger is active, without triggering heavy application logic or consuming API quotas.
+**Trade-off Note: Why we kept the main backend on Render instead of moving to GCP e2-micro**
+While we are using a Google Cloud Platform (GCP) e2-micro always-on free instance to host our Active Probe (since Render does not support UDP traffic for `active_probe.py`), we explicitly chose *not* to migrate the main FastAPI machine-learning backend to this GCP instance. 
+The GCP e2-micro instance provides only 1GB of RAM. Our backend heavily relies on memory-intensive libraries (`scikit-learn`, `xgboost`, `shap`) and loading these models into memory alongside a FastAPI application on a 1GB VM presents a significant risk of Out-Of-Memory (OOM) crashes. 
+Therefore, keeping the main backend on Render (which manages memory swapping and container lifecycle gracefully) and using the GitHub Actions keep-alive ping is the most stable architecture for the SIH demo, despite the minor risk of a cold start if the GitHub Actions cron is delayed.
 
 ---
 ## 2. Frontend Deployment (Vercel)
