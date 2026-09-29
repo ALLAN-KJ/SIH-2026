@@ -183,7 +183,7 @@ export const RiskPanel = ({ risk, ipsec }: { risk: AssessResponse, ipsec?: any }
           </div>
         )}
 
-        <ThreatMatrix riskLabel={risk.risk_label} />
+        <ThreatMatrix risk={risk} ipsec={ipsec} />
 
         {/* Technical Details (progressive disclosure) */}
         <details style={{ marginTop: '24px' }}>

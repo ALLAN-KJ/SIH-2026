@@ -1,0 +1,9 @@
+{
+    "pcap_file": "tunnel_0_AES-128-GCM_14_Video streaming_IPv4_Tunnel.pcap",
+    "mode": "Tunnel",
+    "ip_version": "IPv4",
+    "encryption": "AES-128-GCM",
+    "dh_group": 14,
+    "pfs": true,
+    "traffic_type": "Video streaming"
+}

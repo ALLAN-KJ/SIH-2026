@@ -17,10 +17,10 @@ try {
     [System.IO.File]::WriteAllText($TempConfPath, $content, (New-Object System.Text.UTF8Encoding $False))
 
     # Start Left (Responder)
-    docker run -d --name ipsec-left --net ipsec-net --ip 10.5.0.10 --privileged -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.conf:/etc/ipsec.d/ipsec.conf:ro -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.secrets2:/etc/ipsec.secrets:ro vimagick/strongswan:latest | Out-Null
+    docker run -d --name ipsec-left --net ipsec-net --ip 10.5.0.10 --privileged -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.conf:/etc/ipsec.d/ipsec.conf:ro -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.secrets:/etc/ipsec.secrets:ro vimagick/strongswan:latest | Out-Null
     
     # Start Right (Initiator)
-    docker run -d --name ipsec-right --net ipsec-net --ip 10.5.0.11 --privileged -v ${TempConfPath}:/etc/ipsec.d/ipsec.conf:ro -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.secrets2:/etc/ipsec.secrets:ro vimagick/strongswan:latest | Out-Null
+    docker run -d --name ipsec-right --net ipsec-net --ip 10.5.0.11 --privileged -v ${TempConfPath}:/etc/ipsec.d/ipsec.conf:ro -v $PSScriptRoot\..\tests\strongswan\${TestProfile}\ipsec.secrets:/etc/ipsec.secrets:ro vimagick/strongswan:latest | Out-Null
     
     # Wait for them to settle
     Start-Sleep -Seconds 2
@@ -32,7 +32,7 @@ try {
 
     # Trigger connection from Right to Left
     # Find connection name
-    $ConnName = if ($TestProfile -eq "strong-profile") { "strong-tunnel" } else { "weak-tunnel" }
+    $ConnName = if ($TestProfile -eq "strong-profile") { "strong-tunnel" } elseif ($TestProfile -eq "weak-profile") { "weak-tunnel" } else { "test-tunnel" }
     
     # Wait a moment for ipsec to initialize on container start
     Start-Sleep -Seconds 3

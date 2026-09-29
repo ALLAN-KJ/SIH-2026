@@ -95,5 +95,22 @@ export const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:80
     const audit: AuditLogResponse = await logRes.json();
 
     return { ipsec_request: ipsecReq, risk, remediation, pqc, audit };
+  },
+  async checkHealth(): Promise<boolean> {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      
+      const res = await fetch(`${API_URL}/health`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.status === 'ok';
+    } catch {
+      return false;
+    }
   }
 };

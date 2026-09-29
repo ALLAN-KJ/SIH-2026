@@ -17,7 +17,7 @@ IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN
 *   **Metadata Exposure Detection:** Identifies and flags leakage of sensitive configuration metadata from IPsec negotiations.
 *   **AH Header Parsing:** Natively extracts SPI, Sequence Number, and ICV Length from Authentication Header packets via Scapy.
 *   **Tunnel/Transport & IPv4/IPv6 Detection:** Automatically parses and differentiates between IPsec Tunnel and Transport modes, as well as IPv4/IPv6 traffic.
-*   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP/PCAPNG captures are unavailable.
+*   **Active Probing:** Generate synthetic IKE handshakes to probe live targets (authorized use only) when PCAP/PCAPNG captures are unavailable. *(Note: Supported on a self-hosted instance; blocked by outbound UDP restrictions on free PaaS tiers like Render/Heroku).*
 *   **Configuration compliance:** Auto-generates vendor-specific (Cisco IOS) CLI configuration fixes to remediate identified vulnerabilities using robust regex-based extraction.
 *   **Tamper-Evident Audit Trail:** Merkle-tree based cryptographic logging for compliance and forensic integrity.
 
@@ -63,7 +63,7 @@ npm run dev
 ## Known Limitations
 
 - **Render Free Tier Cold-Starts:** The backend is deployed on Render's free tier. If the service is idle for 15 minutes, it spins down. The **first request after idle may take 50+ seconds** to respond. This is expected. If presenting, ping the backend health endpoint first to warm it up.
-- **Synthetic vs. Real Data:** The models are trained entirely on 5,000 synthetically generated IPsec combinations. We have not yet validated the ESP anomaly detection heuristic against a statistically significant real-world capture dataset.
+- **Synthetic vs. Real Data Validation:** The core models are trained on 5,000 synthetically generated IPsec combinations via Scapy. To prove real-world generalization, they were subsequently validated against a separate testbed of real strongSwan captures (covering varied ciphers and ESP traffic profiles), successfully classifying 6 of 6 real strongSwan captures correctly — however, this sample size is too small to claim generalization; real-world validation at scale is still an open item.
 - **Speculative PQC Claims:** Standardized IANA identifiers for ML-KEM in IKEv2 are still under draft. The PQC score relies on a heuristic mapping based on current proposals, utilizing a three-state model: **Quantum-Safe** (matches draft identifiers), **Classically Vulnerable** (matches known legacy groups), and **Unrecognized** (an unmapped ID). This prevents vendor-specific IDs from being silently penalized as vulnerabilities.
 - **LLM Remediation as Starting Point:** AI-generated Cisco IOS configurations are unverified starting points and must be reviewed by network engineers before production deployment.
 - **Tamper-Evident, not Tamper-Proof:** The SQLite Merkle-tree log proves if partial tampering occurred, but does not prevent an attacker with full filesystem access from deleting/replacing the entire database file outright.

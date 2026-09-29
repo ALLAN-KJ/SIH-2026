@@ -19,8 +19,8 @@ IP_VERSIONS = ["IPv4", "IPv6"]
 ENCRYPTIONS = [
     ("AES-128-CBC", 128, 12, 1),
     ("AES-256-CBC", 256, 12, 1),
-    ("AES-256-GCM", 256, 20, 1),
-    ("3DES", 0, 3, 1) # Legacy for testing
+    ("AES-128-GCM", 128, 20, 1),
+    ("AES-256-GCM", 256, 20, 1)
 ]
 DH_GROUPS = [(14, 2048), (19, 256), (20, 384)] # Group id, size
 PFS_OPTIONS = [True, False]
@@ -29,8 +29,8 @@ PFS_OPTIONS = [True, False]
 # Keys: "size" (min, max), "size_var" (min, max), "iat" (min, max), "iat_var" (min, max), "pkts" (min, max)
 TRAFFIC_PROFILE_RANGES = {
     "VoIP":  {"size": (100, 250), "size_var": (5, 30), "iat": (0.015, 0.04), "iat_var": (0.001, 0.015), "pkts": (100, 600)},
-    "Video": {"size": (700, 1400), "size_var": (100, 400), "iat": (0.002, 0.015), "iat_var": (0.001, 0.005), "pkts": (400, 1000)},
-    "Web":   {"size": (300, 1000), "size_var": (200, 600), "iat": (0.05, 0.3), "iat_var": (0.02, 0.15), "pkts": (50, 500)},
+    "Video streaming": {"size": (700, 1400), "size_var": (100, 400), "iat": (0.002, 0.015), "iat_var": (0.001, 0.005), "pkts": (400, 1000)},
+    "Web-browsing":   {"size": (300, 1000), "size_var": (200, 600), "iat": (0.05, 0.3), "iat_var": (0.02, 0.15), "pkts": (50, 500)},
     "ICMP":  {"size": (64, 100), "size_var": (0, 0), "iat": (0.8, 1.5), "iat_var": (0.0, 0.1), "pkts": (5, 20)},
     "Email": {"size": (400, 1100), "size_var": (50, 250), "iat": (0.1, 0.8), "iat_var": (0.05, 0.4), "pkts": (30, 400)},
     "WhatsApp": {"size": (40, 300), "size_var": (10, 50), "iat": (0.02, 0.1), "iat_var": (0.01, 0.05), "pkts": (100, 500)}
@@ -76,7 +76,11 @@ def generate_pcap(filename, mode, ip_v, enc, dh, pfs, traffic_type):
     t1 = ikev2.IKEv2_Transform(transform_type=1, transform_id=enc[2], key_length=enc[1])
     t2 = ikev2.IKEv2_Transform(transform_type=2, transform_id=5) # PRF SHA384
     t3 = ikev2.IKEv2_Transform(transform_type=4, transform_id=dh[0]) # DH group
-    prop = ikev2.IKEv2_Proposal(trans=[t1, t2, t3])
+    trans_list = [t1, t2, t3]
+    if "CBC" in enc[0]:
+        t4 = ikev2.IKEv2_Transform(transform_type=3, transform_id=2) # Auth SHA1 for CBC to emulate HMAC
+        trans_list.append(t4)
+    prop = ikev2.IKEv2_Proposal(trans=trans_list)
     sa = ikev2.IKEv2_SA(prop=prop)
     
     ike_pkt = ike_base / ikev2.IKEv2(init_SPI=b'\x01\x02\x03\x04\x05\x06\x07\x08', next_payload=33, exch_type=34) / sa

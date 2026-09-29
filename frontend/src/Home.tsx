@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { api } from './lib/api';
 import { UploadSimple, Target, Play, ArrowRight } from '@phosphor-icons/react';
 
 interface HomeProps {
@@ -6,7 +7,45 @@ interface HomeProps {
 }
 
 export function Home({ onNavigate }: HomeProps) {
-  const [liveHealth] = useState(true);
+  const [liveHealth, setLiveHealth] = useState<'online' | 'offline' | 'checking' | 'waking_up'>('checking');
+
+  useEffect(() => {
+    let mounted = true;
+    
+    const check = async () => {
+      if (mounted && liveHealth !== 'online' && liveHealth !== 'waking_up') {
+        setLiveHealth('checking');
+      }
+      
+      let isWakingUpTimer: ReturnType<typeof setTimeout>;
+      if (mounted) {
+        isWakingUpTimer = setTimeout(() => {
+          if (mounted) {
+            setLiveHealth(prev => prev === 'checking' ? 'waking_up' : prev);
+          }
+        }, 4000); // Wait 4 seconds before assuming it's cold-starting
+      }
+      
+      try {
+        const isUp = await api.checkHealth();
+        clearTimeout(isWakingUpTimer);
+        if (mounted) {
+          setLiveHealth(isUp ? 'online' : 'offline');
+        }
+      } catch {
+        clearTimeout(isWakingUpTimer);
+        if (mounted) setLiveHealth('offline');
+      }
+    };
+    
+    check();
+    const interval = setInterval(check, 30000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <div style={{
@@ -257,8 +296,12 @@ export function Home({ onNavigate }: HomeProps) {
           {[
             {
               label: 'Backend',
-              value: 'Online',
+              value: liveHealth === 'online' ? 'Online' 
+                     : liveHealth === 'waking_up' ? 'Waking up...' 
+                     : liveHealth === 'checking' ? 'Checking...' 
+                     : 'Offline',
               isStatus: true,
+              status: liveHealth
             },
             {
               label: 'Protocols',
@@ -270,7 +313,7 @@ export function Home({ onNavigate }: HomeProps) {
               value: 'NIST SP 800-77r1',
               mono: true,
             },
-          ].map(({ label, value, isStatus, mono }) => (
+          ].map(({ label, value, isStatus, mono, status }) => (
             <div key={label} style={{
               border: '1px solid var(--color-border-dim)',
               marginBottom: '10px',
@@ -295,16 +338,26 @@ export function Home({ onNavigate }: HomeProps) {
                   fontSize: 'var(--text-sm)',
                   fontFamily: mono ? 'var(--font-mono)' : 'var(--font-sans)',
                   fontWeight: isStatus ? 600 : 400,
-                  color: isStatus ? 'var(--color-text-1)' : 'var(--color-text-2)',
+                  color: isStatus && status === 'online' ? 'var(--color-text-1)' 
+                         : isStatus && status === 'waking_up' ? 'var(--color-mod)'
+                         : isStatus && status === 'checking' ? 'var(--color-text-2)'
+                         : 'var(--color-text-2)',
                 }}>
                   {isStatus && (
                     <div style={{
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      backgroundColor: liveHealth ? 'var(--color-accent)' : 'var(--color-crit)',
-                      boxShadow: liveHealth ? '0 0 6px rgba(45,212,191,0.6)' : '0 0 6px rgba(248,113,113,0.6)',
+                      backgroundColor: status === 'online' ? 'var(--color-accent)' 
+                                     : status === 'waking_up' ? 'var(--color-mod)'
+                                     : status === 'checking' ? 'var(--color-border-dim)'
+                                     : 'var(--color-crit)',
+                      boxShadow: status === 'online' ? '0 0 6px rgba(45,212,191,0.6)' 
+                                 : status === 'waking_up' ? '0 0 6px rgba(251,191,36,0.6)'
+                                 : status === 'checking' ? 'none'
+                                 : '0 0 6px rgba(248,113,113,0.6)',
                       flexShrink: 0,
+                      animation: (status === 'checking' || status === 'waking_up') ? 'pulse 1.5s infinite' : 'none'
                     }} />
                   )}
                   {value}
