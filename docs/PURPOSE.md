@@ -57,7 +57,7 @@ For evaluation, use the provided demo PCAPs (`scenario_critical_legacy.pcap`, `s
 
 ## Deployment
 **Live Deployment (Demo):**
-- **Frontend:** https://sih-2026-frontend-eight.vercel.app
+- **Frontend:** https://sih-2026-frontend-lu54ol7f5-allan-kjs-projects.vercel.app
 - **Backend (API):** https://sih-2026-jg10.onrender.com
 
 The backend can be started locally via:

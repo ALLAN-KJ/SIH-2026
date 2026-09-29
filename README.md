@@ -3,7 +3,7 @@
 IPsec VPN Protocol Analyzer is a security auditing engine that ingests IPsec VPN negotiation captures (PCAP and PCAPNG), parses cryptographic parameters, and evaluates the configuration's security posture using an XGBoost risk classifier. It natively integrates SHAP for explainable scoring, checks against NIST FIPS 203 for Post-Quantum Cryptography (PQC) readiness, and leverages an LLM to generate compliant remediation configurations.
 
 **Live Deployment (Demo):**
-- **Frontend:** https://sih-2026-frontend-eight.vercel.app
+- **Frontend:** https://sih-2026-frontend-lu54ol7f5-allan-kjs-projects.vercel.app
 - **Backend (API):** https://sih-2026-jg10.onrender.com
 
 ## Features (Fully Live, No Mocks)
